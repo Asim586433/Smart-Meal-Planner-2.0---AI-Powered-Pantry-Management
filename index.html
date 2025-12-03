@@ -3,116 +3,735 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Smart Meal Planner | Pantry → Plan → Shop → Pantry</title>
+    <title>Smart Meal Planner 2.0 | AI-Powered Pantry Management</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
-            --primary: #4CAF50;
-            --primary-dark: #388E3C;
-            --secondary: #2196F3;
-            --accent: #FF9800;
-            --light: #f8f9fa;
-            --dark: #343a40;
-            --gray: #6c757d;
-            --border: #dee2e6;
+            --primary: #7C3AED;
+            --primary-dark: #6D28D9;
+            --secondary: #10B981;
+            --accent: #F59E0B;
+            --danger: #EF4444;
+            --light: #F8FAFC;
+            --dark: #1E293B;
+            --gray: #64748B;
+            --border: #E2E8F0;
+            --gradient: linear-gradient(135deg, #7C3AED 0%, #10B981 100%);
         }
         
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', system-ui, sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
         }
         
         body {
-            background-color: #f5f5f5;
-            color: #333;
-            line-height: 1.6;
+            background: linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 100%);
+            color: var(--dark);
+            min-height: 100vh;
         }
         
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
             padding: 0 20px;
         }
         
-        /* Header & Navigation */
+        /* Modern Header */
         header {
-            background-color: white;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            background: white;
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
             position: sticky;
             top: 0;
-            z-index: 100;
+            z-index: 1000;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
         
         .header-content {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 15px 0;
+            padding: 16px 0;
         }
         
-        .logo {
+        .logo-area {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
         }
         
         .logo-icon {
-            color: var(--primary);
-            font-size: 28px;
+            background: var(--gradient);
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
         }
         
         .logo-text {
-            font-size: 22px;
-            font-weight: 700;
-            color: var(--dark);
+            font-size: 24px;
+            font-weight: 800;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
         
-        .logo-subtext {
-            font-size: 12px;
-            color: var(--gray);
-            margin-left: 5px;
-        }
-        
-        .nav-links {
-            display: flex;
-            gap: 25px;
-        }
-        
-        .nav-link {
-            text-decoration: none;
-            color: var(--dark);
-            font-weight: 500;
-            padding: 8px 12px;
-            border-radius: 5px;
-            transition: all 0.3s;
-        }
-        
-        .nav-link:hover, .nav-link.active {
-            background-color: var(--primary);
+        .logo-badge {
+            background: var(--secondary);
             color: white;
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-weight: 600;
+            margin-left: 8px;
         }
         
-        .user-menu {
+        .nav-tabs {
+            display: flex;
+            gap: 4px;
+            background: #F1F5F9;
+            padding: 4px;
+            border-radius: 12px;
+        }
+        
+        .nav-tab {
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            background: transparent;
+            color: var(--gray);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 8px;
+        }
+        
+        .nav-tab:hover {
+            color: var(--primary);
+            background: rgba(124, 58, 237, 0.1);
+        }
+        
+        .nav-tab.active {
+            background: white;
+            color: var(--primary);
+            box-shadow: 0 2px 8px rgba(124, 58, 237, 0.2);
+        }
+        
+        .user-area {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        .notifications {
+            position: relative;
+            cursor: pointer;
+        }
+        
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--danger);
+            color: white;
+            font-size: 10px;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .ai-assistant-btn {
+            background: var(--gradient);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: transform 0.3s ease;
+        }
+        
+        .ai-assistant-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
         }
         
         .avatar {
             width: 40px;
             height: 40px;
             border-radius: 50%;
-            background-color: var(--secondary);
+            background: var(--gradient);
             color: white;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: bold;
+            cursor: pointer;
         }
         
-        /* Authentication Modal */
+        /* Main Layout */
+        .app-container {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 24px;
+            padding: 24px 0;
+            min-height: calc(100vh - 80px);
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            background: white;
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            height: fit-content;
+            position: sticky;
+            top: 100px;
+        }
+        
+        .sidebar-section {
+            margin-bottom: 32px;
+        }
+        
+        .sidebar-title {
+            font-size: 12px;
+            text-transform: uppercase;
+            color: var(--gray);
+            font-weight: 600;
+            margin-bottom: 16px;
+            letter-spacing: 1px;
+        }
+        
+        .sidebar-menu {
+            list-style: none;
+        }
+        
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            border-radius: 10px;
+            color: var(--dark);
+            text-decoration: none;
+            margin-bottom: 4px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .sidebar-item:hover {
+            background: #F8FAFC;
+            color: var(--primary);
+        }
+        
+        .sidebar-item.active {
+            background: rgba(124, 58, 237, 0.1);
+            color: var(--primary);
+            font-weight: 600;
+        }
+        
+        .sidebar-item i {
+            width: 20px;
+            text-align: center;
+        }
+        
+        .badge {
+            background: var(--primary);
+            color: white;
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: 12px;
+            margin-left: auto;
+        }
+        
+        /* Main Content */
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+        
+        .page {
+            display: none;
+            animation: slideIn 0.3s ease;
+        }
+        
+        .page.active {
+            display: block;
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Dashboard */
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+        
+        .dashboard-title {
+            font-size: 32px;
+            font-weight: 800;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .dashboard-subtitle {
+            color: var(--gray);
+            margin-top: 8px;
+        }
+        
+        .date-filter {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: white;
+            padding: 8px 16px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            transition: transform 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+        }
+        
+        .stat-trend {
+            font-size: 14px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .trend-up {
+            color: var(--secondary);
+        }
+        
+        .trend-down {
+            color: var(--danger);
+        }
+        
+        .stat-value {
+            font-size: 32px;
+            font-weight: 800;
+            margin-bottom: 4px;
+        }
+        
+        .stat-label {
+            color: var(--gray);
+            font-size: 14px;
+        }
+        
+        /* Charts Grid */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+        
+        .chart-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+        
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+        
+        .chart-title {
+            font-size: 18px;
+            font-weight: 700;
+        }
+        
+        /* AI Features */
+        .ai-features-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+        
+        .ai-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+        
+        .ai-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-5px);
+        }
+        
+        .ai-card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        
+        .ai-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: rgba(124, 58, 237, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            font-size: 20px;
+        }
+        
+        /* Pantry Page */
+        .pantry-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+        
+        .search-add-container {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+        
+        .search-box {
+            position: relative;
+            width: 300px;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 12px 20px 12px 48px;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+        }
+        
+        .search-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray);
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border-radius: 12px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background: var(--gradient);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
+        }
+        
+        .btn-secondary {
+            background: #F1F5F9;
+            color: var(--dark);
+        }
+        
+        .btn-secondary:hover {
+            background: #E2E8F0;
+        }
+        
+        .btn-accent {
+            background: var(--accent);
+            color: white;
+        }
+        
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+        
+        /* Categories */
+        .categories-bar {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 24px;
+            overflow-x: auto;
+            padding-bottom: 8px;
+        }
+        
+        .category-chip {
+            padding: 8px 16px;
+            background: white;
+            border: 2px solid var(--border);
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.3s ease;
+        }
+        
+        .category-chip:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+        
+        .category-chip.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        /* Pantry Grid */
+        .pantry-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 32px;
+        }
+        
+        .pantry-item-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .pantry-item-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+            border-color: var(--primary);
+        }
+        
+        .expiry-badge {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .expiry-soon {
+            background: #FEF3C7;
+            color: #92400E;
+        }
+        
+        .expiry-good {
+            background: #D1FAE5;
+            color: #065F46;
+        }
+        
+        .item-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        
+        .item-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: white;
+        }
+        
+        .item-name {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        
+        .item-meta {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 16px;
+            color: var(--gray);
+            font-size: 14px;
+        }
+        
+        .quantity-slider {
+            width: 100%;
+            margin: 16px 0;
+        }
+        
+        .item-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 16px;
+        }
+        
+        /* AI Chat Assistant */
+        .ai-chat-container {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            width: 400px;
+            height: 600px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            display: none;
+            flex-direction: column;
+            z-index: 1000;
+            overflow: hidden;
+        }
+        
+        .ai-chat-container.active {
+            display: flex;
+        }
+        
+        .chat-header {
+            background: var(--gradient);
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        
+        .message {
+            max-width: 80%;
+            padding: 12px 16px;
+            border-radius: 16px;
+            line-height: 1.5;
+        }
+        
+        .message-user {
+            align-self: flex-end;
+            background: var(--primary);
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+        
+        .message-ai {
+            align-self: flex-start;
+            background: #F1F5F9;
+            color: var(--dark);
+            border-bottom-left-radius: 4px;
+        }
+        
+        .chat-input {
+            padding: 16px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            gap: 12px;
+        }
+        
+        .chat-input input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            font-size: 14px;
+        }
+        
+        .chat-input input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        
+        /* Modal */
         .modal {
             display: none;
             position: fixed;
@@ -120,8 +739,9 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0,0,0,0.5);
-            z-index: 1000;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(5px);
+            z-index: 1001;
             align-items: center;
             justify-content: center;
         }
@@ -131,23 +751,28 @@
         }
         
         .modal-content {
-            background-color: white;
-            border-radius: 10px;
+            background: white;
+            border-radius: 20px;
             width: 90%;
-            max-width: 400px;
-            padding: 30px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            max-width: 500px;
+            padding: 32px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            animation: modalSlideIn 0.3s ease;
+        }
+        
+        @keyframes modalSlideIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         
         .modal-header {
-            margin-bottom: 20px;
-            text-align: center;
+            margin-bottom: 24px;
         }
         
         .modal-title {
             font-size: 24px;
-            color: var(--dark);
-            margin-bottom: 5px;
+            font-weight: 800;
+            margin-bottom: 8px;
         }
         
         .form-group {
@@ -157,1373 +782,1428 @@
         .form-label {
             display: block;
             margin-bottom: 8px;
-            font-weight: 500;
-        }
-        
-        .form-input {
-            width: 100%;
-            padding: 12px 15px;
-            border: 1px solid var(--border);
-            border-radius: 5px;
-            font-size: 16px;
-        }
-        
-        .btn {
-            padding: 12px 24px;
-            border: none;
-            border-radius: 5px;
-            font-size: 16px;
             font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
+            color: var(--dark);
         }
         
-        .btn-primary {
-            background-color: var(--primary);
-            color: white;
-        }
-        
-        .btn-primary:hover {
-            background-color: var(--primary-dark);
-        }
-        
-        .btn-secondary {
-            background-color: var(--secondary);
-            color: white;
-        }
-        
-        .btn-secondary:hover {
-            background-color: #0b7dda;
-        }
-        
-        .btn-accent {
-            background-color: var(--accent);
-            color: white;
-        }
-        
-        .btn-accent:hover {
-            background-color: #e68900;
-        }
-        
-        .btn-block {
+        .form-control {
             width: 100%;
-        }
-        
-        .btn-sm {
-            padding: 8px 16px;
-            font-size: 14px;
-        }
-        
-        /* Main Content */
-        .main-content {
-            min-height: calc(100vh - 200px);
-            padding: 30px 0;
-        }
-        
-        .page {
-            display: none;
-        }
-        
-        .page.active {
-            display: block;
-            animation: fadeIn 0.5s;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        
-        .page-header {
-            margin-bottom: 30px;
-        }
-        
-        .page-title {
-            font-size: 32px;
-            color: var(--dark);
-            margin-bottom: 10px;
-        }
-        
-        .page-subtitle {
-            font-size: 18px;
-            color: var(--gray);
-        }
-        
-        /* Dashboard */
-        .dashboard-stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-        
-        .stat-card {
-            background-color: white;
-            border-radius: 10px;
-            padding: 25px;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-        
-        .stat-icon {
-            width: 60px;
-            height: 60px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 28px;
-            color: white;
-        }
-        
-        .stat-icon.pantry {
-            background-color: var(--primary);
-        }
-        
-        .stat-icon.plan {
-            background-color: var(--secondary);
-        }
-        
-        .stat-icon.shop {
-            background-color: var(--accent);
-        }
-        
-        .stat-content h3 {
-            font-size: 28px;
-            margin-bottom: 5px;
-        }
-        
-        .stat-content p {
-            color: var(--gray);
-        }
-        
-        .quick-actions {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-bottom: 40px;
-        }
-        
-        .action-card {
-            background-color: white;
-            border-radius: 10px;
-            padding: 25px;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
-            text-align: center;
-            cursor: pointer;
-            transition: transform 0.3s;
-        }
-        
-        .action-card:hover {
-            transform: translateY(-5px);
-        }
-        
-        .action-icon {
-            font-size: 36px;
-            color: var(--primary);
-            margin-bottom: 15px;
-        }
-        
-        .action-card h3 {
-            margin-bottom: 10px;
-            color: var(--dark);
-        }
-        
-        /* Pantry Page */
-        .pantry-controls {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 25px;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-        
-        .search-bar {
-            flex: 1;
-            max-width: 400px;
-            position: relative;
-        }
-        
-        .search-bar i {
-            position: absolute;
-            left: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--gray);
-        }
-        
-        .search-bar input {
-            width: 100%;
-            padding: 12px 15px 12px 45px;
-            border: 1px solid var(--border);
-            border-radius: 5px;
-            font-size: 16px;
-        }
-        
-        .pantry-items {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 20px;
-        }
-        
-        .pantry-item {
-            background-color: white;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .item-info h4 {
-            margin-bottom: 5px;
-            color: var(--dark);
-        }
-        
-        .item-meta {
-            display: flex;
-            gap: 15px;
-            font-size: 14px;
-            color: var(--gray);
-        }
-        
-        .item-actions {
-            display: flex;
-            gap: 10px;
-        }
-        
-        /* Meal Planning Page */
-        .planning-container {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 30px;
-        }
-        
-        @media (max-width: 768px) {
-            .planning-container {
-                grid-template-columns: 1fr;
-            }
-        }
-        
-        .plan-section {
-            background-color: white;
-            border-radius: 10px;
-            padding: 25px;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
-        }
-        
-        .plan-section h3 {
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid var(--border);
-            color: var(--dark);
-        }
-        
-        .meal-option {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px;
-            border: 1px solid var(--border);
-            border-radius: 5px;
-            margin-bottom: 15px;
-        }
-        
-        .meal-option.active {
-            border-color: var(--primary);
-            background-color: rgba(76, 175, 80, 0.05);
-        }
-        
-        .meal-info h4 {
-            margin-bottom: 5px;
-        }
-        
-        .meal-meta {
-            font-size: 14px;
-            color: var(--gray);
-        }
-        
-        .ai-generate-box {
-            background-color: #f8f9fa;
-            border: 2px dashed var(--border);
-            border-radius: 10px;
-            padding: 30px;
-            text-align: center;
-            margin-top: 20px;
-            cursor: pointer;
-        }
-        
-        .ai-generate-box:hover {
-            border-color: var(--primary);
-        }
-        
-        .ai-generate-box i {
-            font-size: 36px;
-            color: var(--primary);
-            margin-bottom: 15px;
-        }
-        
-        /* Shopping List Page */
-        .shopping-list {
-            background-color: white;
-            border-radius: 10px;
-            padding: 25px;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
-        }
-        
-        .shopping-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px;
-            border-bottom: 1px solid var(--border);
-        }
-        
-        .shopping-item:last-child {
-            border-bottom: none;
-        }
-        
-        .item-check {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-        
-        .checkmark {
-            width: 20px;
-            height: 20px;
+            padding: 12px 16px;
             border: 2px solid var(--border);
-            border-radius: 50%;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            border-radius: 12px;
+            font-size: 14px;
+            transition: all 0.3s ease;
         }
         
-        .checkmark.checked {
-            background-color: var(--primary);
+        .form-control:focus {
+            outline: none;
             border-color: var(--primary);
-            color: white;
-        }
-        
-        /* Voice Input */
-        .voice-input-container {
-            margin: 25px 0;
-            position: relative;
-        }
-        
-        .voice-input {
-            width: 100%;
-            padding: 15px;
-            border: 1px solid var(--border);
-            border-radius: 5px;
-            font-size: 16px;
-            padding-right: 120px;
-        }
-        
-        .voice-btn {
-            position: absolute;
-            right: 5px;
-            top: 50%;
-            transform: translateY(-50%);
-            background-color: var(--secondary);
-            color: white;
-            border: none;
-            border-radius: 5px;
-            padding: 10px 15px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .voice-btn.listening {
-            background-color: #ff5252;
-            animation: pulse 1.5s infinite;
-        }
-        
-        @keyframes pulse {
-            0% { box-shadow: 0 0 0 0 rgba(255, 82, 82, 0.7); }
-            70% { box-shadow: 0 0 0 10px rgba(255, 82, 82, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(255, 82, 82, 0); }
-        }
-        
-        /* Footer */
-        footer {
-            background-color: var(--dark);
-            color: white;
-            padding: 30px 0;
-            margin-top: 50px;
-        }
-        
-        .footer-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 20px;
-        }
-        
-        .footer-links {
-            display: flex;
-            gap: 20px;
-        }
-        
-        .footer-link {
-            color: #adb5bd;
-            text-decoration: none;
-            transition: color 0.3s;
-        }
-        
-        .footer-link:hover {
-            color: white;
-        }
-        
-        /* Notification */
-        .notification {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background-color: var(--primary);
-            color: white;
-            padding: 15px 25px;
-            border-radius: 5px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            z-index: 1000;
-            transform: translateY(100px);
-            opacity: 0;
-            transition: all 0.5s;
-        }
-        
-        .notification.show {
-            transform: translateY(0);
-            opacity: 1;
-        }
-        
-        /* Demo Notice */
-        .demo-notice {
-            background-color: #fff3cd;
-            color: #856404;
-            padding: 15px;
-            border-radius: 5px;
-            border: 1px solid #ffeaa7;
-            margin-bottom: 25px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
         }
         
         /* Responsive */
-        @media (max-width: 768px) {
-            .nav-links {
+        @media (max-width: 1200px) {
+            .app-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
                 display: none;
             }
             
-            .header-content {
-                padding: 15px 0;
+            .charts-grid {
+                grid-template-columns: 1fr;
             }
             
-            .page-title {
-                font-size: 26px;
+            .ai-features-grid {
+                grid-template-columns: 1fr;
             }
+            
+            .ai-chat-container {
+                width: 350px;
+                height: 500px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .pantry-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .ai-chat-container {
+                width: 100%;
+                height: 70vh;
+                bottom: 0;
+                right: 0;
+                border-radius: 20px 20px 0 0;
+            }
+            
+            .nav-tabs {
+                display: none;
+            }
+            
+            .search-box {
+                width: 100%;
+            }
+        }
+        
+        /* Animations */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        /* Loading States */
+        .loading {
+            background: linear-gradient(90deg, #F1F5F9 0%, #E2E8F0 50%, #F1F5F9 100%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+        }
+        
+        @keyframes loading {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+        
+        /* Toast Notifications */
+        .toast-container {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            z-index: 1002;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .toast {
+            background: white;
+            border-radius: 12px;
+            padding: 16px 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transform: translateX(100%);
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+        
+        .toast.show {
+            transform: translateX(0);
+            opacity: 1;
+        }
+        
+        .toast-success {
+            border-left: 4px solid var(--secondary);
+        }
+        
+        .toast-error {
+            border-left: 4px solid var(--danger);
+        }
+        
+        .toast-info {
+            border-left: 4px solid var(--primary);
         }
     </style>
 </head>
 <body>
-    <!-- Authentication Modal -->
-    <div id="authModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 class="modal-title">Welcome to Smart Meal Planner</h2>
-                <p>Sign in to access your pantry and meal plans</p>
+    <!-- Toast Container -->
+    <div class="toast-container"></div>
+
+    <!-- AI Chat Assistant -->
+    <div class="ai-chat-container" id="aiChat">
+        <div class="chat-header">
+            <div>
+                <h3 style="margin: 0; font-weight: 700;">AI Meal Assistant</h3>
+                <p style="margin: 4px 0 0; opacity: 0.9; font-size: 14px;">Powered by GPT-4</p>
             </div>
-            <div class="form-group">
-                <label class="form-label" for="email">Email</label>
-                <input type="email" id="email" class="form-input" placeholder="your.email@example.com" value="demo@mealplanner.com">
+            <button id="closeChat" style="background: none; border: none; color: white; cursor: pointer; font-size: 20px;">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="chat-messages" id="chatMessages">
+            <div class="message message-ai">
+                Hello! I'm your AI Meal Assistant. I can help you plan meals, suggest recipes based on your pantry, generate shopping lists, and answer nutrition questions. How can I assist you today?
             </div>
-            <div class="form-group">
-                <label class="form-label" for="password">Password</label>
-                <input type="password" id="password" class="form-input" placeholder="Enter your password" value="demo123">
-            </div>
-            <button id="loginBtn" class="btn btn-primary btn-block">Sign In</button>
-            <p style="text-align: center; margin-top: 15px; color: var(--gray); font-size: 14px;">Demo account pre-filled. Click "Sign In" to continue.</p>
+        </div>
+        <div class="chat-input">
+            <input type="text" id="chatInput" placeholder="Ask me anything about meal planning...">
+            <button id="sendMessage" class="btn btn-primary">
+                <i class="fas fa-paper-plane"></i>
+            </button>
         </div>
     </div>
 
     <!-- Header -->
     <header>
         <div class="container header-content">
-            <div class="logo">
-                <div class="logo-icon"><i class="fas fa-apple-alt"></i></div>
+            <div class="logo-area">
+                <div class="logo-icon">
+                    <i class="fas fa-apple-alt"></i>
+                </div>
                 <div>
-                    <div class="logo-text">Smart Meal Planner<span class="logo-subtext">Pantry → Plan → Shop → Pantry</span></div>
+                    <div class="logo-text">MealPlanner 2.0<span class="logo-badge">AI</span></div>
                 </div>
             </div>
-            <nav class="nav-links">
-                <a href="#" class="nav-link active" data-page="dashboard">Dashboard</a>
-                <a href="#" class="nav-link" data-page="pantry">My Pantry</a>
-                <a href="#" class="nav-link" data-page="plan">Meal Planning</a>
-                <a href="#" class="nav-link" data-page="shop">Shopping List</a>
-                <a href="#" class="nav-link" data-page="settings">Settings</a>
-            </nav>
-            <div class="user-menu">
-                <div class="avatar" id="userAvatar">D</div>
-                <button id="logoutBtn" class="btn btn-sm btn-secondary">Logout</button>
+            
+            <div class="nav-tabs">
+                <button class="nav-tab active" data-page="dashboard">
+                    <i class="fas fa-home"></i> Dashboard
+                </button>
+                <button class="nav-tab" data-page="pantry">
+                    <i class="fas fa-warehouse"></i> Pantry
+                </button>
+                <button class="nav-tab" data-page="meal-planning">
+                    <i class="fas fa-calendar-alt"></i> Meal Planning
+                </button>
+                <button class="nav-tab" data-page="recipes">
+                    <i class="fas fa-utensils"></i> Recipes
+                </button>
+                <button class="nav-tab" data-page="shopping">
+                    <i class="fas fa-shopping-cart"></i> Shopping
+                </button>
+                <button class="nav-tab" data-page="nutrition">
+                    <i class="fas fa-chart-pie"></i> Nutrition
+                </button>
+            </div>
+            
+            <div class="user-area">
+                <div class="notifications">
+                    <i class="fas fa-bell" style="font-size: 20px; color: var(--gray);"></i>
+                    <span class="notification-badge">3</span>
+                </div>
+                <button class="ai-assistant-btn" id="openChat">
+                    <i class="fas fa-robot"></i> AI Assistant
+                </button>
+                <div class="avatar" id="userAvatar">U</div>
             </div>
         </div>
     </header>
 
-    <!-- Main Content -->
-    <main class="main-content container">
-        <!-- Dashboard Page -->
-        <div id="dashboard" class="page active">
-            <div class="page-header">
-                <h1 class="page-title">Dashboard</h1>
-                <p class="page-subtitle">Welcome back! Here's your meal planning overview.</p>
+    <!-- Main App Container -->
+    <div class="container app-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-section">
+                <h3 class="sidebar-title">Quick Actions</h3>
+                <ul class="sidebar-menu">
+                    <li class="sidebar-item active" data-page="dashboard">
+                        <i class="fas fa-home"></i> Dashboard
+                        <span class="badge">AI</span>
+                    </li>
+                    <li class="sidebar-item" data-page="pantry">
+                        <i class="fas fa-plus-circle"></i> Add to Pantry
+                    </li>
+                    <li class="sidebar-item" data-page="meal-planning">
+                        <i class="fas fa-robot"></i> AI Meal Suggestions
+                    </li>
+                    <li class="sidebar-item" data-page="shopping">
+                        <i class="fas fa-cart-plus"></i> Generate Shopping List
+                    </li>
+                    <li class="sidebar-item" data-page="nutrition">
+                        <i class="fas fa-chart-line"></i> Nutrition Insights
+                    </li>
+                </ul>
             </div>
             
-            <div class="demo-notice">
-                <i class="fas fa-info-circle"></i>
-                <span>This is a functional HTML prototype. In the actual Softr/Airtable app, all data would be stored in Airtable and user-specific.</span>
+            <div class="sidebar-section">
+                <h3 class="sidebar-title">Smart Features</h3>
+                <ul class="sidebar-menu">
+                    <li class="sidebar-item" data-feature="expiry-tracker">
+                        <i class="fas fa-clock"></i> Expiry Tracker
+                        <span class="badge">3</span>
+                    </li>
+                    <li class="sidebar-item" data-feature="waste-reduction">
+                        <i class="fas fa-recycle"></i> Waste Reduction
+                    </li>
+                    <li class="sidebar-item" data-feature="budget-tracker">
+                        <i class="fas fa-wallet"></i> Budget Tracker
+                    </li>
+                    <li class="sidebar-item" data-feature="meal-prep">
+                        <i class="fas fa-blender"></i> Meal Prep Assistant
+                    </li>
+                </ul>
             </div>
             
-            <div class="dashboard-stats">
-                <div class="stat-card">
-                    <div class="stat-icon pantry"><i class="fas fa-warehouse"></i></div>
-                    <div class="stat-content">
-                        <h3 id="pantryCount">12</h3>
-                        <p>Items in your pantry</p>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon plan"><i class="fas fa-calendar-alt"></i></div>
-                    <div class="stat-content">
-                        <h3 id="mealCount">7</h3>
-                        <p>Meals planned this week</p>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon shop"><i class="fas fa-shopping-cart"></i></div>
-                    <div class="stat-content">
-                        <h3 id="shoppingCount">5</h3>
-                        <p>Items on shopping list</p>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="quick-actions">
-                <div class="action-card" data-page="pantry">
-                    <div class="action-icon"><i class="fas fa-plus-circle"></i></div>
-                    <h3>Add to Pantry</h3>
-                    <p>Quickly add items to your pantry</p>
-                </div>
-                <div class="action-card" data-page="plan">
-                    <div class="action-icon"><i class="fas fa-robot"></i></div>
-                    <h3>AI Meal Suggestions</h3>
-                    <p>Get personalized meal ideas</p>
-                </div>
-                <div class="action-card" data-page="shop">
-                    <div class="action-icon"><i class="fas fa-list-check"></i></div>
-                    <h3>View Shopping List</h3>
-                    <p>Check items you need to buy</p>
-                </div>
-                <div class="action-card" id="voiceAction">
-                    <div class="action-icon"><i class="fas fa-microphone"></i></div>
-                    <h3>Voice Input</h3>
-                    <p>Add items using voice command</p>
-                </div>
+            <div class="sidebar-section">
+                <h3 class="sidebar-title">Integrations</h3>
+                <ul class="sidebar-menu">
+                    <li class="sidebar-item">
+                        <i class="fab fa-instacart"></i> Instacart
+                    </li>
+                    <li class="sidebar-item">
+                        <i class="fab fa-amazon"></i> Amazon Fresh
+                    </li>
+                    <li class="sidebar-item">
+                        <i class="fas fa-heartbeat"></i> Apple Health
+                    </li>
+                    <li class="sidebar-item">
+                        <i class="fab fa-google"></i> Google Calendar
+                    </li>
+                </ul>
             </div>
         </div>
-        
-        <!-- Pantry Page -->
-        <div id="pantry" class="page">
-            <div class="page-header">
-                <h1 class="page-title">My Pantry</h1>
-                <p class="page-subtitle">Manage your pantry items and track expiration dates</p>
-            </div>
-            
-            <div class="pantry-controls">
-                <div class="search-bar">
-                    <i class="fas fa-search"></i>
-                    <input type="text" id="pantrySearch" placeholder="Search pantry items...">
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Dashboard Page -->
+            <div id="dashboard" class="page active">
+                <div class="dashboard-header">
+                    <div>
+                        <h1 class="dashboard-title">Welcome Back, User!</h1>
+                        <p class="dashboard-subtitle">Here's your meal planning overview for today</p>
+                    </div>
+                    <div class="date-filter">
+                        <i class="fas fa-calendar"></i>
+                        <span id="currentDate">Today, November 30, 2023</span>
+                    </div>
                 </div>
-                <div>
-                    <button id="addPantryItem" class="btn btn-primary"><i class="fas fa-plus"></i> Add Item</button>
-                    <button id="voicePantryBtn" class="btn btn-secondary"><i class="fas fa-microphone"></i> Voice Add</button>
-                </div>
-            </div>
-            
-            <!-- Voice Input Container -->
-            <div class="voice-input-container" id="voicePantryContainer" style="display: none;">
-                <input type="text" class="voice-input" id="voicePantryInput" placeholder="Say item name and quantity...">
-                <button class="voice-btn" id="voicePantryToggle">
-                    <i class="fas fa-microphone"></i> Start Speaking
-                </button>
-            </div>
-            
-            <div class="pantry-items" id="pantryItemsContainer">
-                <!-- Pantry items will be dynamically added here -->
-            </div>
-        </div>
-        
-        <!-- Meal Planning Page -->
-        <div id="plan" class="page">
-            <div class="page-header">
-                <h1 class="page-title">Meal Planning</h1>
-                <p class="page-subtitle">Plan your meals for the week based on pantry items</p>
-            </div>
-            
-            <div class="planning-container">
-                <div class="plan-section">
-                    <h3>Suggested Meals</h3>
-                    <div id="suggestedMeals">
-                        <!-- Suggested meals will be dynamically added here -->
+
+                <!-- Stats Grid -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon" style="background: var(--primary);">
+                                <i class="fas fa-warehouse"></i>
+                            </div>
+                            <div class="stat-trend trend-up">
+                                <i class="fas fa-arrow-up"></i> 12%
+                            </div>
+                        </div>
+                        <div class="stat-value" id="pantryCount">24</div>
+                        <div class="stat-label">Items in Pantry</div>
                     </div>
                     
-                    <div class="ai-generate-box" id="generateMealsBtn">
-                        <i class="fas fa-robot"></i>
-                        <h3>Generate AI Meal Suggestions</h3>
-                        <p>Click to get personalized meal ideas based on your pantry</p>
-                    </div>
-                </div>
-                
-                <div class="plan-section">
-                    <h3>This Week's Plan</h3>
-                    <div id="weeklyPlan">
-                        <!-- Weekly plan items will be dynamically added here -->
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon" style="background: var(--secondary);">
+                                <i class="fas fa-calendar-check"></i>
+                            </div>
+                            <div class="stat-trend trend-up">
+                                <i class="fas fa-arrow-up"></i> 8%
+                            </div>
+                        </div>
+                        <div class="stat-value" id="mealCount">14</div>
+                        <div class="stat-label">Meals This Week</div>
                     </div>
                     
-                    <div style="margin-top: 20px;">
-                        <button id="generateShoppingList" class="btn btn-accent btn-block">
-                            <i class="fas fa-cart-plus"></i> Generate Shopping List
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon" style="background: var(--accent);">
+                                <i class="fas fa-shopping-cart"></i>
+                            </div>
+                            <div class="stat-trend trend-down">
+                                <i class="fas fa-arrow-down"></i> 15%
+                            </div>
+                        </div>
+                        <div class="stat-value" id="shoppingCount">8</div>
+                        <div class="stat-label">Shopping Items</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon" style="background: var(--danger);">
+                                <i class="fas fa-exclamation-triangle"></i>
+                            </div>
+                            <div class="stat-trend trend-up">
+                                <i class="fas fa-arrow-up"></i> 3
+                            </div>
+                        </div>
+                        <div class="stat-value" id="expiryCount">5</div>
+                        <div class="stat-label">Expiring Soon</div>
+                    </div>
+                </div>
+
+                <!-- Charts Grid -->
+                <div class="charts-grid">
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3 class="chart-title">Weekly Meal Planning</h3>
+                            <select class="form-control" style="width: auto; padding: 8px 16px;">
+                                <option>This Week</option>
+                                <option>Last Week</option>
+                                <option>This Month</option>
+                            </select>
+                        </div>
+                        <canvas id="mealChart" height="250"></canvas>
+                    </div>
+                    
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3 class="chart-title">Nutrition Balance</h3>
+                            <i class="fas fa-info-circle" style="color: var(--gray);"></i>
+                        </div>
+                        <canvas id="nutritionChart" height="250"></canvas>
+                    </div>
+                </div>
+
+                <!-- AI Features Grid -->
+                <div class="ai-features-grid">
+                    <div class="ai-card" id="aiMealSuggestions">
+                        <div class="ai-card-header">
+                            <div class="ai-icon">
+                                <i class="fas fa-robot"></i>
+                            </div>
+                            <div>
+                                <h3 style="margin: 0 0 4px;">AI Meal Suggestions</h3>
+                                <p style="margin: 0; color: var(--gray); font-size: 14px;">Based on your pantry</p>
+                            </div>
+                        </div>
+                        <p style="margin-bottom: 16px; color: var(--gray);">Get personalized meal ideas using advanced AI that analyzes your pantry items, preferences, and nutrition goals.</p>
+                        <button class="btn btn-primary" onclick="generateAISuggestions()">
+                            <i class="fas fa-magic"></i> Generate Suggestions
+                        </button>
+                    </div>
+                    
+                    <div class="ai-card" id="smartShopping">
+                        <div class="ai-card-header">
+                            <div class="ai-icon">
+                                <i class="fas fa-cart-plus"></i>
+                            </div>
+                            <div>
+                                <h3 style="margin: 0 0 4px;">Smart Shopping List</h3>
+                                <p style="margin: 0; color: var(--gray); font-size: 14px;">AI-powered optimization</p>
+                            </div>
+                        </div>
+                        <p style="margin-bottom: 16px; color: var(--gray);">Generate optimized shopping lists based on meal plans, budget constraints, and store availability.</p>
+                        <button class="btn btn-secondary" onclick="generateShoppingList()">
+                            <i class="fas fa-bolt"></i> Generate List
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Quick Actions</h3>
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
+                        <button class="btn btn-secondary" onclick="showModal('addItemModal')">
+                            <i class="fas fa-plus"></i> Add to Pantry
+                        </button>
+                        <button class="btn btn-secondary" onclick="switchPage('meal-planning')">
+                            <i class="fas fa-calendar-plus"></i> Plan Meals
+                        </button>
+                        <button class="btn btn-secondary" onclick="scanReceipt()">
+                            <i class="fas fa-receipt"></i> Scan Receipt
+                        </button>
+                        <button class="btn btn-secondary" onclick="voiceInput()">
+                            <i class="fas fa-microphone"></i> Voice Input
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pantry Page -->
+            <div id="pantry" class="page">
+                <div class="pantry-header">
+                    <div>
+                        <h1 class="dashboard-title">Smart Pantry</h1>
+                        <p class="dashboard-subtitle">Manage your pantry items with AI-powered insights</p>
+                    </div>
+                    <div class="search-add-container">
+                        <div class="search-box">
+                            <i class="fas fa-search search-icon"></i>
+                            <input type="text" class="search-input" id="pantrySearch" placeholder="Search pantry items...">
+                        </div>
+                        <div class="action-buttons">
+                            <button class="btn btn-primary" onclick="showModal('addItemModal')">
+                                <i class="fas fa-plus"></i> Add Item
+                            </button>
+                            <button class="btn btn-secondary" onclick="showModal('bulkAddModal')">
+                                <i class="fas fa-upload"></i> Bulk Add
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Categories -->
+                <div class="categories-bar">
+                    <div class="category-chip active">All Items</div>
+                    <div class="category-chip" data-category="expiring">Expiring Soon</div>
+                    <div class="category-chip" data-category="protein">Protein</div>
+                    <div class="category-chip" data-category="vegetables">Vegetables</div>
+                    <div class="category-chip" data-category="fruits">Fruits</div>
+                    <div class="category-chip" data-category="dairy">Dairy</div>
+                    <div class="category-chip" data-category="grains">Grains</div>
+                    <div class="category-chip" data-category="spices">Spices</div>
+                    <div class="category-chip" data-category="beverages">Beverages</div>
+                </div>
+
+                <!-- Pantry Grid -->
+                <div class="pantry-grid" id="pantryGrid">
+                    <!-- Pantry items will be loaded here -->
+                </div>
+
+                <!-- AI Recommendations -->
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">
+                            <i class="fas fa-lightbulb" style="color: var(--accent);"></i>
+                            AI Recommendations
+                        </h3>
+                        <button class="btn btn-sm btn-primary" onclick="refreshRecommendations()">
+                            <i class="fas fa-sync"></i> Refresh
+                        </button>
+                    </div>
+                    <div id="aiRecommendations" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px;">
+                        <!-- AI recommendations will be loaded here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Meal Planning Page -->
+            <div id="meal-planning" class="page">
+                <div class="pantry-header">
+                    <div>
+                        <h1 class="dashboard-title">AI Meal Planning</h1>
+                        <p class="dashboard-subtitle">Plan your meals with smart AI suggestions</p>
+                    </div>
+                    <div class="action-buttons">
+                        <button class="btn btn-primary" onclick="generateWeeklyPlan()">
+                            <i class="fas fa-robot"></i> Generate Weekly Plan
+                        </button>
+                        <button class="btn btn-secondary" onclick="showModal('mealPreferencesModal')">
+                            <i class="fas fa-sliders-h"></i> Preferences
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Weekly Calendar -->
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Weekly Meal Calendar</h3>
+                        <div style="display: flex; gap: 8px;">
+                            <button class="btn btn-sm btn-secondary">
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                            <span style="font-weight: 600;">Nov 27 - Dec 3</span>
+                            <button class="btn btn-sm btn-secondary">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div id="weeklyCalendar" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 12px; margin-top: 20px;">
+                        <!-- Days will be populated by JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Recipe Suggestions -->
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Recommended Recipes</h3>
+                        <select class="form-control" style="width: auto; padding: 8px 16px;" id="recipeFilter">
+                            <option>Based on Pantry</option>
+                            <option>Quick Meals</option>
+                            <option>Healthy Options</option>
+                            <option>Family Favorites</option>
+                        </select>
+                    </div>
+                    <div id="recipeSuggestions" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 20px;">
+                        <!-- Recipes will be loaded here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Shopping List Page -->
+            <div id="shopping" class="page">
+                <div class="pantry-header">
+                    <div>
+                        <h1 class="dashboard-title">Smart Shopping List</h1>
+                        <p class="dashboard-subtitle">AI-optimized shopping with price comparison</p>
+                    </div>
+                    <div class="action-buttons">
+                        <button class="btn btn-primary" onclick="optimizeShoppingList()">
+                            <i class="fas fa-bolt"></i> Optimize List
+                        </button>
+                        <button class="btn btn-secondary" onclick="exportShoppingList()">
+                            <i class="fas fa-share"></i> Export
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Shopping List -->
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Shopping List</h3>
+                        <div style="display: flex; align-items: center; gap: 16px;">
+                            <span style="color: var(--gray);">Total Estimated: <strong id="shoppingTotal">$45.67</strong></span>
+                            <button class="btn btn-sm btn-accent" onclick="comparePrices()">
+                                <i class="fas fa-balance-scale"></i> Compare Prices
+                            </button>
+                        </div>
+                    </div>
+                    <div id="shoppingList" style="margin-top: 20px;">
+                        <!-- Shopping items will be loaded here -->
+                    </div>
+                </div>
+
+                <!-- Store Comparison -->
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Store Price Comparison</h3>
+                        <button class="btn btn-sm btn-secondary" onclick="refreshPrices()">
+                            <i class="fas fa-sync"></i> Refresh
+                        </button>
+                    </div>
+                    <div id="priceComparison" style="margin-top: 20px;">
+                        <!-- Price comparison will be loaded here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Add Item Modal -->
+            <div class="modal" id="addItemModal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2 class="modal-title">Add Item to Pantry</h2>
+                        <p style="color: var(--gray);">Add items manually or use AI scanning</p>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Item Name</label>
+                        <input type="text" class="form-control" id="itemName" placeholder="e.g., Organic Chicken Breast">
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                        <div class="form-group">
+                            <label class="form-label">Quantity</label>
+                            <input type="text" class="form-control" id="itemQuantity" placeholder="e.g., 2 lbs">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Category</label>
+                            <select class="form-control" id="itemCategory">
+                                <option>Protein</option>
+                                <option>Vegetables</option>
+                                <option>Fruits</option>
+                                <option>Dairy</option>
+                                <option>Grains</option>
+                                <option>Spices</option>
+                                <option>Beverages</option>
+                                <option>Other</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                        <div class="form-group">
+                            <label class="form-label">Expiry Date</label>
+                            <input type="date" class="form-control" id="itemExpiry">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Storage Location</label>
+                            <select class="form-control" id="itemLocation">
+                                <option>Refrigerator</option>
+                                <option>Freezer</option>
+                                <option>Pantry</option>
+                                <option>Counter</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Notes</label>
+                        <textarea class="form-control" id="itemNotes" rows="3" placeholder="Any additional notes..."></textarea>
+                    </div>
+                    
+                    <div style="display: flex; gap: 12px; margin-top: 24px;">
+                        <button class="btn btn-primary" style="flex: 1;" onclick="addPantryItem()">
+                            <i class="fas fa-plus"></i> Add Item
+                        </button>
+                        <button class="btn btn-secondary" style="flex: 1;" onclick="closeModal('addItemModal')">
+                            Cancel
+                        </button>
+                    </div>
+                    
+                    <div style="margin-top: 20px; text-align: center;">
+                        <button class="btn btn-accent" onclick="scanBarcode()">
+                            <i class="fas fa-barcode"></i> Scan Barcode
+                        </button>
+                        <button class="btn btn-secondary" onclick="useCamera()" style="margin-left: 12px;">
+                            <i class="fas fa-camera"></i> Take Photo
                         </button>
                     </div>
                 </div>
             </div>
         </div>
-        
-        <!-- Shopping List Page -->
-        <div id="shop" class="page">
-            <div class="page-header">
-                <h1 class="page-title">Shopping List</h1>
-                <p class="page-subtitle">Items needed based on your meal plan</p>
-            </div>
-            
-            <div class="shopping-list" id="shoppingListContainer">
-                <!-- Shopping list items will be dynamically added here -->
-            </div>
-            
-            <div style="margin-top: 20px; text-align: center;">
-                <button id="clearCheckedItems" class="btn btn-secondary">
-                    <i class="fas fa-trash"></i> Clear Checked Items
-                </button>
-                <button id="emailListBtn" class="btn btn-primary">
-                    <i class="fas fa-envelope"></i> Email List
-                </button>
-            </div>
-        </div>
-        
-        <!-- Settings Page -->
-        <div id="settings" class="page">
-            <div class="page-header">
-                <h1 class="page-title">Settings</h1>
-                <p class="page-subtitle">Configure your app preferences</p>
-            </div>
-            
-            <div class="plan-section">
-                <h3>AI Integration</h3>
-                <div style="margin-bottom: 20px;">
-                    <p>Current AI Provider: <strong id="currentAIProvider">OpenAI</strong></p>
-                    <p style="font-size: 14px; color: var(--gray); margin-top: 5px;">
-                        In the actual implementation, AI calls go through an LLM wrapper webhook for easy provider switching.
-                    </p>
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label">Switch AI Provider</label>
-                    <select id="aiProviderSelect" class="form-input">
-                        <option value="openai">OpenAI (GPT-4)</option>
-                        <option value="claude">Anthropic Claude</option>
-                        <option value="gemini">Google Gemini</option>
-                    </select>
-                </div>
-                
-                <button id="updateAIProvider" class="btn btn-primary">
-                    <i class="fas fa-sync"></i> Update AI Provider
-                </button>
-            </div>
-            
-            <div class="plan-section" style="margin-top: 30px;">
-                <h3>App Information</h3>
-                <div style="margin-bottom: 20px;">
-                    <p><strong>Tech Stack:</strong> Softr (UI), Airtable (Database), Zapier (Automations)</p>
-                    <p><strong>LLM Wrapper:</strong> All AI calls are routed through a single webhook endpoint for easy maintenance.</p>
-                    <p><strong>User Filtering:</strong> Data is filtered by <code>current_user.email</code> for user-specific views.</p>
-                </div>
-            </div>
-        </div>
-    </main>
-
-    <!-- Footer -->
-    <footer>
-        <div class="container footer-content">
-            <div>
-                <div class="logo-text" style="color: white; font-size: 20px;">Smart Meal Planner</div>
-                <p style="color: #adb5bd; margin-top: 5px;">Pantry → Plan → Shop → Pantry</p>
-            </div>
-            <div class="footer-links">
-                <a href="#" class="footer-link">Privacy Policy</a>
-                <a href="#" class="footer-link">Terms of Service</a>
-                <a href="#" class="footer-link">Contact Support</a>
-            </div>
-        </div>
-    </footer>
-
-    <!-- Notification -->
-    <div id="notification" class="notification">
-        <i class="fas fa-check-circle"></i>
-        <span id="notificationText">Action completed successfully!</span>
     </div>
 
     <script>
-        // Application State
+        // Enhanced Application State
         const appState = {
-            currentUser: null,
-            isAuthenticated: false,
+            currentUser: { name: "User", email: "user@mealplanner.com" },
+            isAuthenticated: true,
+            aiProvider: "GPT-4",
+            llmWrapperUrl: "https://api.yourdomain.com/llm/generate",
+            
             pantryItems: [
-                { id: 1, name: "Chicken Breast", quantity: "2 lbs", category: "Protein", expiry: "2023-12-15" },
-                { id: 2, name: "Brown Rice", quantity: "1 bag", category: "Grains", expiry: "2024-06-30" },
-                { id: 3, name: "Broccoli", quantity: "3 heads", category: "Vegetables", expiry: "2023-12-10" },
-                { id: 4, name: "Eggs", quantity: "12 count", category: "Dairy", expiry: "2023-12-20" },
-                { id: 5, name: "Olive Oil", quantity: "1 bottle", category: "Condiments", expiry: "2024-12-01" },
-                { id: 6, name: "Garlic", quantity: "5 cloves", category: "Vegetables", expiry: "2023-12-25" },
-                { id: 7, name: "Onions", quantity: "3 pieces", category: "Vegetables", expiry: "2023-12-18" },
-                { id: 8, name: "Pasta", quantity: "2 boxes", category: "Grains", expiry: "2024-08-15" },
-                { id: 9, name: "Tomato Sauce", quantity: "1 jar", category: "Condiments", expiry: "2024-05-30" },
-                { id: 10, name: "Milk", quantity: "1 gallon", category: "Dairy", expiry: "2023-12-12" },
-                { id: 11, name: "Bananas", quantity: "6 pieces", category: "Fruits", expiry: "2023-12-09" },
-                { id: 12, name: "Spinach", quantity: "1 bag", category: "Vegetables", expiry: "2023-12-08" }
+                { id: 1, name: "Organic Chicken Breast", quantity: "2 lbs", category: "Protein", expiry: "2023-12-15", location: "Refrigerator", notes: "Free-range", status: "good" },
+                { id: 2, name: "Brown Rice", quantity: "5 lbs", category: "Grains", expiry: "2024-06-30", location: "Pantry", notes: "Organic", status: "good" },
+                { id: 3, name: "Fresh Broccoli", quantity: "3 heads", category: "Vegetables", expiry: "2023-12-10", location: "Refrigerator", notes: "", status: "expiring" },
+                { id: 4, name: "Free-range Eggs", quantity: "12 count", category: "Dairy", expiry: "2023-12-20", location: "Refrigerator", notes: "Large size", status: "good" },
+                { id: 5, name: "Extra Virgin Olive Oil", quantity: "500ml", category: "Condiments", expiry: "2024-12-01", location: "Pantry", notes: "Cold pressed", status: "good" },
+                { id: 6, name: "Organic Garlic", quantity: "10 cloves", category: "Vegetables", expiry: "2023-12-25", location: "Counter", notes: "", status: "good" },
+                { id: 7, name: "Sweet Onions", quantity: "5 pieces", category: "Vegetables", expiry: "2023-12-18", location: "Pantry", notes: "", status: "expiring" },
+                { id: 8, name: "Whole Wheat Pasta", quantity: "2 boxes", category: "Grains", expiry: "2024-08-15", location: "Pantry", notes: "", status: "good" },
+                { id: 9, name: "Tomato Sauce", quantity: "24 oz", category: "Condiments", expiry: "2024-05-30", location: "Pantry", notes: "Low sodium", status: "good" },
+                { id: 10, name: "Almond Milk", quantity: "1 gallon", category: "Beverages", expiry: "2023-12-12", location: "Refrigerator", notes: "Unsweetened", status: "expiring" },
+                { id: 11, name: "Bananas", quantity: "6 pieces", category: "Fruits", expiry: "2023-12-09", location: "Counter", notes: "", status: "expiring" },
+                { id: 12, name: "Baby Spinach", quantity: "16 oz", category: "Vegetables", expiry: "2023-12-08", location: "Refrigerator", notes: "Organic", status: "expiring" }
             ],
-            suggestedMeals: [
-                { id: 1, name: "Chicken & Broccoli Stir Fry", ingredients: ["Chicken Breast", "Broccoli", "Garlic", "Olive Oil"], prepTime: "25 min" },
-                { id: 2, name: "Vegetable Pasta", ingredients: ["Pasta", "Tomato Sauce", "Garlic", "Onions"], prepTime: "20 min" },
-                { id: 3, name: "Rice & Eggs Bowl", ingredients: ["Brown Rice", "Eggs", "Spinach"], prepTime: "15 min" },
-                { id: 4, name: "Banana Smoothie", ingredients: ["Bananas", "Milk"], prepTime: "5 min" }
+            
+            mealPlan: [
+                { day: "Monday", breakfast: "Smoothie Bowl", lunch: "Chicken Salad", dinner: "Stir Fry", snacks: ["Apple", "Yogurt"] },
+                { day: "Tuesday", breakfast: "Oatmeal", lunch: "Leftovers", dinner: "Pasta Primavera", snacks: ["Banana"] },
+                { day: "Wednesday", breakfast: "Eggs & Toast", lunch: "Quinoa Bowl", dinner: "Salmon & Veggies", snacks: ["Nuts"] },
+                { day: "Thursday", breakfast: "Smoothie", lunch: "Chicken Wrap", dinner: "Vegetable Curry", snacks: ["Fruit"] },
+                { day: "Friday", breakfast: "Yogurt Parfait", lunch: "Leftovers", dinner: "Pizza Night", snacks: ["Crackers"] },
+                { day: "Saturday", breakfast: "Pancakes", lunch: "Grilled Cheese", dinner: "Steak Dinner", snacks: ["Chips"] },
+                { day: "Sunday", breakfast: "Brunch", lunch: "Meal Prep", dinner: "Roast Chicken", snacks: ["Dark Chocolate"] }
             ],
-            weeklyPlan: [
-                { id: 1, day: "Monday", meal: "Chicken & Broccoli Stir Fry", status: "planned" },
-                { id: 2, day: "Tuesday", meal: "Vegetable Pasta", status: "planned" },
-                { id: 3, day: "Wednesday", meal: "Rice & Eggs Bowl", status: "planned" },
-                { id: 4, day: "Thursday", meal: "Leftovers", status: "planned" }
-            ],
+            
             shoppingList: [
-                { id: 1, name: "Carrots", quantity: "1 lb", category: "Vegetables", checked: false },
-                { id: 2, name: "Bell Peppers", quantity: "3 pieces", category: "Vegetables", checked: false },
-                { id: 3, name: "Ground Beef", quantity: "1 lb", category: "Protein", checked: false },
-                { id: 4, name: "Cheese", quantity: "1 block", category: "Dairy", checked: true },
-                { id: 5, name: "Bread", quantity: "1 loaf", category: "Grains", checked: false }
+                { id: 1, name: "Carrots", quantity: "1 lb", category: "Vegetables", estimatedPrice: 1.99, store: "Walmart", checked: false },
+                { id: 2, name: "Bell Peppers", quantity: "3 pieces", category: "Vegetables", estimatedPrice: 2.49, store: "Whole Foods", checked: false },
+                { id: 3, name: "Ground Beef", quantity: "1 lb", category: "Protein", estimatedPrice: 8.99, store: "Costco", checked: false },
+                { id: 4, name: "Cheddar Cheese", quantity: "8 oz", category: "Dairy", estimatedPrice: 3.99, store: "Trader Joe's", checked: true },
+                { id: 5, name: "Whole Wheat Bread", quantity: "1 loaf", category: "Grains", estimatedPrice: 4.99, store: "Local Bakery", checked: false }
             ],
-            isListening: false,
-            aiProvider: "openai"
+            
+            aiRecommendations: [],
+            chatHistory: [],
+            notifications: [
+                { id: 1, type: "warning", message: "3 items expiring in 3 days", timestamp: "2 hours ago" },
+                { id: 2, type: "info", message: "AI generated new meal suggestions", timestamp: "1 day ago" },
+                { id: 3, type: "success", message: "Shopping list optimized. Saved $12.50", timestamp: "2 days ago" }
+            ]
         };
 
         // DOM Elements
-        const authModal = document.getElementById('authModal');
-        const loginBtn = document.getElementById('loginBtn');
-        const logoutBtn = document.getElementById('logoutBtn');
-        const userAvatar = document.getElementById('userAvatar');
-        const navLinks = document.querySelectorAll('.nav-link');
+        const navTabs = document.querySelectorAll('.nav-tab');
+        const sidebarItems = document.querySelectorAll('.sidebar-item');
         const pages = document.querySelectorAll('.page');
-        const quickActionCards = document.querySelectorAll('.action-card');
-        const addPantryItemBtn = document.getElementById('addPantryItem');
-        const voicePantryBtn = document.getElementById('voicePantryBtn');
-        const voicePantryContainer = document.getElementById('voicePantryContainer');
-        const voicePantryToggle = document.getElementById('voicePantryToggle');
-        const voicePantryInput = document.getElementById('voicePantryInput');
-        const pantryItemsContainer = document.getElementById('pantryItemsContainer');
-        const pantrySearch = document.getElementById('pantrySearch');
-        const generateMealsBtn = document.getElementById('generateMealsBtn');
-        const suggestedMealsContainer = document.getElementById('suggestedMeals');
-        const weeklyPlanContainer = document.getElementById('weeklyPlan');
-        const generateShoppingListBtn = document.getElementById('generateShoppingList');
-        const shoppingListContainer = document.getElementById('shoppingListContainer');
-        const clearCheckedItemsBtn = document.getElementById('clearCheckedItems');
-        const emailListBtn = document.getElementById('emailListBtn');
-        const voiceAction = document.getElementById('voiceAction');
-        const aiProviderSelect = document.getElementById('aiProviderSelect');
-        const updateAIProviderBtn = document.getElementById('updateAIProvider');
-        const currentAIProvider = document.getElementById('currentAIProvider');
-        const notification = document.getElementById('notification');
-        const notificationText = document.getElementById('notificationText');
+        const aiChat = document.getElementById('aiChat');
+        const chatMessages = document.getElementById('chatMessages');
+        const chatInput = document.getElementById('chatInput');
+        const sendMessageBtn = document.getElementById('sendMessage');
+        const openChatBtn = document.getElementById('openChat');
+        const closeChatBtn = document.getElementById('closeChat');
+        const pantryGrid = document.getElementById('pantryGrid');
+        const weeklyCalendar = document.getElementById('weeklyCalendar');
+        const recipeSuggestions = document.getElementById('recipeSuggestions');
+        const shoppingListContainer = document.getElementById('shoppingList');
+        const aiRecommendationsContainer = document.getElementById('aiRecommendations');
 
-        // Initialize the app
+        // Initialize the application
         function initApp() {
-            // Show auth modal on load
-            authModal.classList.add('active');
+            // Set current date
+            document.getElementById('currentDate').textContent = new Date().toLocaleDateString('en-US', { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            });
+
+            // Initialize charts
+            initCharts();
+            
+            // Load initial data
+            renderPantryItems();
+            renderWeeklyCalendar();
+            renderRecipeSuggestions();
+            renderShoppingList();
+            renderAIRecommendations();
+            updateDashboardStats();
             
             // Set up event listeners
             setupEventListeners();
             
-            // Load initial data
-            renderPantryItems();
-            renderSuggestedMeals();
-            renderWeeklyPlan();
-            renderShoppingList();
-            updateStats();
+            // Show welcome toast
+            showToast("Welcome to MealPlanner 2.0! Your AI-powered meal planning assistant is ready.", "success");
         }
 
-        // Set up all event listeners
+        // Set up event listeners
         function setupEventListeners() {
-            // Authentication
-            loginBtn.addEventListener('click', handleLogin);
-            logoutBtn.addEventListener('click', handleLogout);
-            
-            // Navigation
-            navLinks.forEach(link => {
-                link.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    const pageId = link.getAttribute('data-page');
+            // Navigation tabs
+            navTabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const pageId = tab.getAttribute('data-page');
                     switchPage(pageId);
                     
-                    // Update active nav link
-                    navLinks.forEach(nav => nav.classList.remove('active'));
-                    link.classList.add('active');
+                    // Update active tab
+                    navTabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
                 });
             });
             
-            // Quick actions on dashboard
-            quickActionCards.forEach(card => {
-                card.addEventListener('click', (e) => {
-                    const pageId = card.getAttribute('data-page');
+            // Sidebar items
+            sidebarItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    const pageId = item.getAttribute('data-page');
                     if (pageId) {
                         switchPage(pageId);
                         
-                        // Update active nav link
-                        navLinks.forEach(nav => {
-                            nav.classList.remove('active');
-                            if (nav.getAttribute('data-page') === pageId) {
-                                nav.classList.add('active');
+                        // Update active tab
+                        navTabs.forEach(tab => {
+                            tab.classList.remove('active');
+                            if (tab.getAttribute('data-page') === pageId) {
+                                tab.classList.add('active');
                             }
                         });
-                    }
-                    
-                    // Special handling for voice action
-                    if (card.id === 'voiceAction') {
-                        showVoiceInput();
                     }
                 });
             });
             
-            // Pantry management
-            addPantryItemBtn.addEventListener('click', addPantryItem);
-            voicePantryBtn.addEventListener('click', toggleVoiceInput);
-            voicePantryToggle.addEventListener('click', toggleVoiceRecognition);
-            pantrySearch.addEventListener('input', searchPantryItems);
+            // AI Chat
+            openChatBtn.addEventListener('click', () => {
+                aiChat.classList.add('active');
+                chatInput.focus();
+            });
             
-            // Meal planning
-            generateMealsBtn.addEventListener('click', generateAIMeals);
-            generateShoppingListBtn.addEventListener('click', generateShoppingList);
+            closeChatBtn.addEventListener('click', () => {
+                aiChat.classList.remove('active');
+            });
             
-            // Shopping list
-            clearCheckedItemsBtn.addEventListener('click', clearCheckedItems);
-            emailListBtn.addEventListener('click', emailShoppingList);
+            sendMessageBtn.addEventListener('click', sendChatMessage);
+            chatInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') sendChatMessage();
+            });
             
-            // Settings
-            updateAIProviderBtn.addEventListener('click', updateAIProvider);
-            
-            // Voice input for pantry
-            voiceAction.addEventListener('click', showVoiceInput);
+            // Category chips
+            document.querySelectorAll('.category-chip').forEach(chip => {
+                chip.addEventListener('click', () => {
+                    document.querySelectorAll('.category-chip').forEach(c => c.classList.remove('active'));
+                    chip.classList.add('active');
+                    filterPantryItems(chip.getAttribute('data-category'));
+                });
+            });
         }
 
-        // Handle user login
-        function handleLogin() {
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            
-            if (email && password) {
-                appState.currentUser = email;
-                appState.isAuthenticated = true;
-                
-                // Update UI
-                userAvatar.textContent = email.charAt(0).toUpperCase();
-                authModal.classList.remove('active');
-                
-                showNotification(`Welcome back, ${email}!`);
-            }
-        }
+        // Initialize charts
+        function initCharts() {
+            // Meal planning chart
+            const mealCtx = document.getElementById('mealChart').getContext('2d');
+            new Chart(mealCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    datasets: [{
+                        label: 'Meals Planned',
+                        data: [3, 4, 3, 4, 3, 5, 4],
+                        borderColor: '#7C3AED',
+                        backgroundColor: 'rgba(124, 58, 237, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 6
+                        }
+                    }
+                }
+            });
 
-        // Handle user logout
-        function handleLogout() {
-            appState.currentUser = null;
-            appState.isAuthenticated = false;
-            
-            // Update UI
-            userAvatar.textContent = 'D';
-            authModal.classList.add('active');
-            
-            // Go to dashboard
-            switchPage('dashboard');
-            navLinks.forEach(nav => {
-                nav.classList.remove('active');
-                if (nav.getAttribute('data-page') === 'dashboard') {
-                    nav.classList.add('active');
+            // Nutrition chart
+            const nutritionCtx = document.getElementById('nutritionChart').getContext('2d');
+            new Chart(nutritionCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Protein', 'Carbs', 'Fats', 'Fiber'],
+                    datasets: [{
+                        data: [30, 40, 20, 10],
+                        backgroundColor: [
+                            '#7C3AED',
+                            '#10B981',
+                            '#F59E0B',
+                            '#8B5CF6'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    cutout: '70%',
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
                 }
             });
         }
 
         // Switch between pages
         function switchPage(pageId) {
-            // Hide all pages
-            pages.forEach(page => page.classList.remove('active'));
-            
-            // Show selected page
-            const targetPage = document.getElementById(pageId);
-            if (targetPage) {
-                targetPage.classList.add('active');
-            }
+            pages.forEach(page => {
+                page.classList.remove('active');
+                if (page.id === pageId) {
+                    page.classList.add('active');
+                }
+            });
+        }
+
+        // Show modal
+        function showModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+        }
+
+        // Close modal
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
         }
 
         // Render pantry items
         function renderPantryItems(filter = '') {
-            pantryItemsContainer.innerHTML = '';
+            pantryGrid.innerHTML = '';
             
-            const filteredItems = appState.pantryItems.filter(item => 
-                item.name.toLowerCase().includes(filter.toLowerCase()) ||
-                item.category.toLowerCase().includes(filter.toLowerCase())
-            );
+            let filteredItems = appState.pantryItems;
+            if (filter === 'expiring') {
+                filteredItems = filteredItems.filter(item => item.status === 'expiring');
+            } else if (filter) {
+                filteredItems = filteredItems.filter(item => item.category.toLowerCase() === filter);
+            }
             
             filteredItems.forEach(item => {
-                const pantryItem = document.createElement('div');
-                pantryItem.className = 'pantry-item';
-                pantryItem.innerHTML = `
-                    <div class="item-info">
-                        <h4>${item.name}</h4>
-                        <div class="item-meta">
-                            <span>${item.quantity}</span>
-                            <span>${item.category}</span>
-                            <span>Expires: ${item.expiry}</span>
+                const expiryDate = new Date(item.expiry);
+                const today = new Date();
+                const daysUntilExpiry = Math.ceil((expiryDate - today) / (1000 * 60 * 60 * 24));
+                
+                const card = document.createElement('div');
+                card.className = 'pantry-item-card';
+                card.innerHTML = `
+                    <div class="expiry-badge ${item.status === 'expiring' ? 'expiry-soon' : 'expiry-good'}">
+                        ${item.status === 'expiring' ? 'Expiring Soon' : 'Fresh'}
+                    </div>
+                    <div class="item-header">
+                        <div class="item-icon" style="background: ${getCategoryColor(item.category)};">
+                            ${getCategoryIcon(item.category)}
+                        </div>
+                        <div>
+                            <div class="item-name">${item.name}</div>
+                            <div style="color: var(--gray); font-size: 14px;">${item.location}</div>
                         </div>
                     </div>
+                    <div class="item-meta">
+                        <div>
+                            <div style="font-weight: 600;">Quantity</div>
+                            <div>${item.quantity}</div>
+                        </div>
+                        <div>
+                            <div style="font-weight: 600;">Expires</div>
+                            <div>${formatDate(item.expiry)} (${daysUntilExpiry} days)</div>
+                        </div>
+                    </div>
+                    <div style="margin: 16px 0;">
+                        <div style="font-weight: 600; margin-bottom: 8px;">Usage Suggestion:</div>
+                        <div style="color: var(--gray); font-size: 14px;">${getUsageSuggestion(item)}</div>
+                    </div>
                     <div class="item-actions">
-                        <button class="btn btn-sm btn-secondary" onclick="usePantryItem(${item.id})">Use</button>
-                        <button class="btn btn-sm btn-accent" onclick="removePantryItem(${item.id})">Remove</button>
+                        <button class="btn btn-sm btn-primary" onclick="useItem(${item.id})">
+                            <i class="fas fa-check"></i> Use
+                        </button>
+                        <button class="btn btn-sm btn-secondary" onclick="editItem(${item.id})">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                        <button class="btn btn-sm btn-danger" onclick="removeItem(${item.id})">
+                            <i class="fas fa-trash"></i>
+                        </button>
                     </div>
                 `;
-                pantryItemsContainer.appendChild(pantryItem);
+                pantryGrid.appendChild(card);
             });
             
-            // Update pantry count
-            document.getElementById('pantryCount').textContent = appState.pantryItems.length;
+            updateDashboardStats();
         }
 
-        // Add a new pantry item
+        // Filter pantry items
+        function filterPantryItems(category) {
+            renderPantryItems(category);
+        }
+
+        // Add pantry item
         function addPantryItem() {
-            const itemName = prompt("Enter item name:");
-            if (!itemName) return;
+            const name = document.getElementById('itemName').value;
+            const quantity = document.getElementById('itemQuantity').value;
+            const category = document.getElementById('itemCategory').value;
+            const expiry = document.getElementById('itemExpiry').value;
+            const location = document.getElementById('itemLocation').value;
+            const notes = document.getElementById('itemNotes').value;
             
-            const quantity = prompt("Enter quantity (e.g., '2 lbs', '1 bag'):");
-            if (!quantity) return;
-            
-            const categories = ["Protein", "Vegetables", "Fruits", "Grains", "Dairy", "Condiments"];
-            const category = prompt(`Enter category (${categories.join(', ')}):`);
-            
-            const expiry = prompt("Enter expiry date (YYYY-MM-DD):", "2023-12-31");
+            if (!name || !quantity) {
+                showToast("Please fill in all required fields", "error");
+                return;
+            }
             
             const newItem = {
                 id: appState.pantryItems.length + 1,
-                name: itemName,
-                quantity: quantity,
-                category: category || "Other",
-                expiry: expiry || "2023-12-31"
+                name,
+                quantity,
+                category,
+                expiry: expiry || new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+                location,
+                notes,
+                status: new Date(expiry) - new Date() < 3 * 24 * 60 * 60 * 1000 ? 'expiring' : 'good'
             };
             
             appState.pantryItems.push(newItem);
             renderPantryItems();
-            updateStats();
+            closeModal('addItemModal');
+            showToast(`${name} added to pantry`, "success");
             
-            showNotification(`Added ${itemName} to pantry`);
+            // Clear form
+            document.getElementById('itemName').value = '';
+            document.getElementById('itemQuantity').value = '';
+            document.getElementById('itemExpiry').value = '';
+            document.getElementById('itemNotes').value = '';
         }
 
-        // Remove a pantry item
-        function removePantryItem(id) {
-            appState.pantryItems = appState.pantryItems.filter(item => item.id !== id);
-            renderPantryItems(pantrySearch.value);
-            updateStats();
-            
-            showNotification("Item removed from pantry");
-        }
-
-        // Use a pantry item (simulate consumption)
-        function usePantryItem(id) {
-            const itemIndex = appState.pantryItems.findIndex(item => item.id === id);
-            if (itemIndex !== -1) {
-                const item = appState.pantryItems[itemIndex];
-                
-                // In a real app, this would decrement quantity
-                // For this demo, we'll just remove it
-                appState.pantryItems.splice(itemIndex, 1);
-                renderPantryItems(pantrySearch.value);
-                updateStats();
-                
-                showNotification(`Used ${item.name} from pantry`);
+        // Use item
+        function useItem(itemId) {
+            const item = appState.pantryItems.find(i => i.id === itemId);
+            if (item) {
+                appState.pantryItems = appState.pantryItems.filter(i => i.id !== itemId);
+                renderPantryItems();
+                showToast(`Used ${item.name}`, "success");
+                addChatMessage(`user`, `I just used ${item.name} from my pantry.`);
+                addChatMessage(`ai`, `Great! I'll update your pantry and meal suggestions accordingly. Would you like me to suggest a replacement for your shopping list?`);
             }
         }
 
-        // Search pantry items
-        function searchPantryItems() {
-            renderPantryItems(pantrySearch.value);
-        }
-
-        // Toggle voice input visibility
-        function toggleVoiceInput() {
-            if (voicePantryContainer.style.display === 'none' || !voicePantryContainer.style.display) {
-                voicePantryContainer.style.display = 'block';
-                showNotification("Voice input activated. Click the microphone to start speaking.");
-            } else {
-                voicePantryContainer.style.display = 'none';
-                stopVoiceRecognition();
+        // Edit item
+        function editItem(itemId) {
+            const item = appState.pantryItems.find(i => i.id === itemId);
+            if (item) {
+                document.getElementById('itemName').value = item.name;
+                document.getElementById('itemQuantity').value = item.quantity;
+                document.getElementById('itemCategory').value = item.category;
+                document.getElementById('itemExpiry').value = item.expiry;
+                document.getElementById('itemLocation').value = item.location;
+                document.getElementById('itemNotes').value = item.notes;
+                showModal('addItemModal');
             }
         }
 
-        // Show voice input from dashboard
-        function showVoiceInput() {
-            switchPage('pantry');
-            navLinks.forEach(nav => {
-                nav.classList.remove('active');
-                if (nav.getAttribute('data-page') === 'pantry') {
-                    nav.classList.add('active');
-                }
-            });
-            
-            // Show voice input after a brief delay
-            setTimeout(() => {
-                voicePantryContainer.style.display = 'block';
-                voicePantryInput.focus();
-                showNotification("Voice input activated. Click the microphone to start speaking.");
-            }, 300);
-        }
-
-        // Toggle voice recognition
-        function toggleVoiceRecognition() {
-            if (!appState.isListening) {
-                startVoiceRecognition();
-            } else {
-                stopVoiceRecognition();
+        // Remove item
+        function removeItem(itemId) {
+            const item = appState.pantryItems.find(i => i.id === itemId);
+            if (item && confirm(`Are you sure you want to remove ${item.name}?`)) {
+                appState.pantryItems = appState.pantryItems.filter(i => i.id !== itemId);
+                renderPantryItems();
+                showToast(`${item.name} removed from pantry`, "success");
             }
         }
 
-        // Start voice recognition (simulated for demo)
-        function startVoiceRecognition() {
-            appState.isListening = true;
-            voicePantryToggle.classList.add('listening');
-            voicePantryToggle.innerHTML = '<i class="fas fa-stop"></i> Stop Listening';
-            voicePantryInput.placeholder = "Listening... say something like 'add 2 tomatoes'";
+        // Render weekly calendar
+        function renderWeeklyCalendar() {
+            weeklyCalendar.innerHTML = '';
             
-            // Simulate voice recognition with a timeout
-            setTimeout(() => {
-                // Simulate recognizing a common phrase
-                const phrases = [
-                    "add 2 tomatoes",
-                    "add 1 pound of ground beef",
-                    "add 3 bananas",
-                    "add milk",
-                    "add a loaf of bread"
-                ];
-                
-                const randomPhrase = phrases[Math.floor(Math.random() * phrases.length)];
-                voicePantryInput.value = randomPhrase;
-                
-                // Auto-process after a delay
-                setTimeout(() => {
-                    processVoiceCommand(randomPhrase);
-                }, 1000);
-            }, 1500);
-        }
-
-        // Stop voice recognition
-        function stopVoiceRecognition() {
-            appState.isListening = false;
-            voicePantryToggle.classList.remove('listening');
-            voicePantryToggle.innerHTML = '<i class="fas fa-microphone"></i> Start Speaking';
-            voicePantryInput.placeholder = "Say item name and quantity...";
-        }
-
-        // Process voice command
-        function processVoiceCommand(command) {
-            stopVoiceRecognition();
-            
-            // Simple parsing for demo
-            const words = command.toLowerCase().split(' ');
-            
-            if (words.includes('add') || words.includes('adds') || words.includes('adding')) {
-                // Extract quantity and item name
-                let quantity = "1";
-                let itemName = "";
-                
-                // Look for quantity indicators
-                for (let i = 0; i < words.length; i++) {
-                    if (words[i] === 'add' || words[i] === 'adds' || words[i] === 'adding') {
-                        // Check next word for quantity
-                        if (i + 1 < words.length && !isNaN(parseInt(words[i + 1]))) {
-                            quantity = words[i + 1];
-                            // Join remaining words as item name
-                            itemName = words.slice(i + 2).join(' ');
-                        } else {
-                            // No quantity specified, use default
-                            itemName = words.slice(i + 1).join(' ');
-                        }
-                        break;
-                    }
-                }
-                
-                if (itemName) {
-                    // Add the item to pantry
-                    const newItem = {
-                        id: appState.pantryItems.length + 1,
-                        name: itemName.charAt(0).toUpperCase() + itemName.slice(1),
-                        quantity: quantity + " " + (words.includes('pound') || words.includes('pounds') ? 'lb' : 
-                                  words.includes('loaf') ? 'loaf' : 
-                                  words.includes('gallon') ? 'gallon' : 'count'),
-                        category: "Voice Added",
-                        expiry: "2023-12-31"
-                    };
-                    
-                    appState.pantryItems.push(newItem);
-                    renderPantryItems();
-                    updateStats();
-                    
-                    showNotification(`Added ${quantity} ${itemName} via voice command`);
-                    voicePantryInput.value = "";
-                }
-            }
-        }
-
-        // Render suggested meals
-        function renderSuggestedMeals() {
-            suggestedMealsContainer.innerHTML = '';
-            
-            appState.suggestedMeals.forEach(meal => {
-                const mealOption = document.createElement('div');
-                mealOption.className = 'meal-option';
-                mealOption.innerHTML = `
-                    <div class="meal-info">
-                        <h4>${meal.name}</h4>
-                        <p class="meal-meta">Ingredients: ${meal.ingredients.join(', ')}</p>
-                        <p class="meal-meta">Prep time: ${meal.prepTime}</p>
+            const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+            days.forEach(day => {
+                const meal = appState.mealPlan.find(m => m.day === day);
+                const dayElement = document.createElement('div');
+                dayElement.className = 'pantry-item-card';
+                dayElement.innerHTML = `
+                    <div style="font-weight: 700; margin-bottom: 12px; color: var(--primary);">${day}</div>
+                    <div style="margin-bottom: 8px;">
+                        <div style="font-size: 12px; color: var(--gray);">Breakfast</div>
+                        <div>${meal.breakfast}</div>
                     </div>
-                    <button class="btn btn-primary btn-sm" onclick="addToMealPlan(${meal.id})">Add to Plan</button>
-                `;
-                suggestedMealsContainer.appendChild(mealOption);
-            });
-        }
-
-        // Render weekly meal plan
-        function renderWeeklyPlan() {
-            weeklyPlanContainer.innerHTML = '';
-            
-            appState.weeklyPlan.forEach(planItem => {
-                const planElement = document.createElement('div');
-                planElement.className = 'meal-option';
-                if (planItem.status === 'planned') planElement.classList.add('active');
-                
-                planElement.innerHTML = `
-                    <div class="meal-info">
-                        <h4>${planItem.day}: ${planItem.meal}</h4>
-                        <p class="meal-meta">Status: ${planItem.status}</p>
+                    <div style="margin-bottom: 8px;">
+                        <div style="font-size: 12px; color: var(--gray);">Lunch</div>
+                        <div>${meal.lunch}</div>
                     </div>
-                    <button class="btn btn-sm btn-secondary" onclick="removeFromMealPlan(${planItem.id})">Remove</button>
+                    <div style="margin-bottom: 8px;">
+                        <div style="font-size: 12px; color: var(--gray);">Dinner</div>
+                        <div>${meal.dinner}</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 12px; color: var(--gray);">Snacks</div>
+                        <div>${meal.snacks.join(', ')}</div>
+                    </div>
+                    <button class="btn btn-sm btn-primary" style="margin-top: 12px; width: 100%;" onclick="regenerateMeal('${day}')">
+                        <i class="fas fa-redo"></i> Regenerate
+                    </button>
                 `;
-                weeklyPlanContainer.appendChild(planElement);
+                weeklyCalendar.appendChild(dayElement);
             });
-            
-            // Update meal count
-            document.getElementById('mealCount').textContent = appState.weeklyPlan.filter(item => item.status === 'planned').length;
         }
 
-        // Add meal to weekly plan
-        function addToMealPlan(mealId) {
-            const meal = appState.suggestedMeals.find(m => m.id === mealId);
-            if (!meal) return;
-            
-            // Find next available day
-            const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
-            const plannedDays = appState.weeklyPlan.map(item => item.day);
-            const nextDay = days.find(day => !plannedDays.includes(day)) || "Next Monday";
-            
-            const newPlanItem = {
-                id: appState.weeklyPlan.length + 1,
-                day: nextDay,
-                meal: meal.name,
-                status: 'planned'
-            };
-            
-            appState.weeklyPlan.push(newPlanItem);
-            renderWeeklyPlan();
-            updateStats();
-            
-            showNotification(`Added ${meal.name} to ${nextDay}'s plan`);
-        }
-
-        // Remove meal from weekly plan
-        function removeFromMealPlan(planId) {
-            appState.weeklyPlan = appState.weeklyPlan.filter(item => item.id !== planId);
-            renderWeeklyPlan();
-            updateStats();
-            
-            showNotification("Meal removed from plan");
-        }
-
-        // Generate AI meal suggestions (simulated)
-        function generateAIMeals() {
-            showNotification("Generating AI meal suggestions based on your pantry...");
-            
-            // Simulate API call to LLM wrapper
+        // Regenerate meal for a day
+        function regenerateMeal(day) {
+            showToast(`Generating new meal suggestions for ${day}...`, "info");
             setTimeout(() => {
-                // In a real app, this would call the LLM wrapper webhook
-                // which would then call OpenAI/Claude/Gemini and return structured JSON
-                
-                const newMeals = [
-                    { id: 5, name: "Chicken Rice Bowl", ingredients: ["Chicken Breast", "Brown Rice", "Garlic", "Onions"], prepTime: "30 min" },
-                    { id: 6, name: "Spinach Omelette", ingredients: ["Eggs", "Spinach", "Milk"], prepTime: "10 min" },
-                    { id: 7, name: "Pasta Primavera", ingredients: ["Pasta", "Broccoli", "Garlic", "Olive Oil"], prepTime: "25 min" }
-                ];
-                
-                // Add new meals to suggestions
-                appState.suggestedMeals = [...appState.suggestedMeals, ...newMeals];
-                renderSuggestedMeals();
-                
-                showNotification(`AI generated ${newMeals.length} new meal suggestions using ${appState.aiProvider.toUpperCase()}`);
-            }, 2000);
+                showToast(`${day}'s meals regenerated with AI`, "success");
+            }, 1000);
         }
 
-        // Generate shopping list based on meal plan
-        function generateShoppingList() {
-            // In a real app, this would analyze meal plans and pantry
-            // to determine what's missing
+        // Render recipe suggestions
+        function renderRecipeSuggestions() {
+            recipeSuggestions.innerHTML = '';
             
-            const newItems = [
-                { id: 6, name: "Avocado", quantity: "2 pieces", category: "Fruits", checked: false },
-                { id: 7, name: "Salmon", quantity: "1 lb", category: "Protein", checked: false },
-                { id: 8, name: "Lemons", quantity: "3 pieces", category: "Fruits", checked: false }
+            const recipes = [
+                { name: "Chicken & Broccoli Stir Fry", prepTime: "25 min", difficulty: "Easy", rating: 4.8, tags: ["High Protein", "Low Carb"] },
+                { name: "Vegetable Curry", prepTime: "35 min", difficulty: "Medium", rating: 4.5, tags: ["Vegetarian", "Spicy"] },
+                { name: "Quinoa Salad Bowl", prepTime: "20 min", difficulty: "Easy", rating: 4.9, tags: ["Vegan", "Gluten Free"] },
+                { name: "Salmon with Roasted Veggies", prepTime: "30 min", difficulty: "Medium", rating: 4.7, tags: ["Omega-3", "High Protein"] }
             ];
             
-            // Add new items to shopping list
-            appState.shoppingList = [...appState.shoppingList, ...newItems];
-            renderShoppingList();
-            updateStats();
-            
-            showNotification("Generated shopping list based on your meal plan");
+            recipes.forEach(recipe => {
+                const recipeElement = document.createElement('div');
+                recipeElement.className = 'pantry-item-card';
+                recipeElement.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                        <div style="font-weight: 700; font-size: 18px;">${recipe.name}</div>
+                        <div style="background: var(--accent); color: white; padding: 4px 8px; border-radius: 6px; font-size: 12px;">
+                            ${recipe.rating} <i class="fas fa-star"></i>
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 12px; margin-bottom: 12px; color: var(--gray); font-size: 14px;">
+                        <div><i class="fas fa-clock"></i> ${recipe.prepTime}</div>
+                        <div><i class="fas fa-signal"></i> ${recipe.difficulty}</div>
+                    </div>
+                    <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px;">
+                        ${recipe.tags.map(tag => `<span style="background: #F1F5F9; padding: 4px 8px; border-radius: 12px; font-size: 12px;">${tag}</span>`).join('')}
+                    </div>
+                    <div style="display: flex; gap: 8px;">
+                        <button class="btn btn-sm btn-primary" onclick="viewRecipe('${recipe.name}')">
+                            <i class="fas fa-eye"></i> View
+                        </button>
+                        <button class="btn btn-sm btn-secondary" onclick="addToMealPlan('${recipe.name}')">
+                            <i class="fas fa-plus"></i> Add to Plan
+                        </button>
+                    </div>
+                `;
+                recipeSuggestions.appendChild(recipeElement);
+            });
         }
 
         // Render shopping list
         function renderShoppingList() {
             shoppingListContainer.innerHTML = '';
             
+            let total = 0;
             appState.shoppingList.forEach(item => {
-                const shoppingItem = document.createElement('div');
-                shoppingItem.className = 'shopping-item';
-                shoppingItem.innerHTML = `
-                    <div class="item-check">
-                        <div class="checkmark ${item.checked ? 'checked' : ''}" onclick="toggleShoppingItem(${item.id})">
-                            ${item.checked ? '<i class="fas fa-check"></i>' : ''}
+                total += item.estimatedPrice;
+                
+                const itemElement = document.createElement('div');
+                itemElement.className = 'shopping-item';
+                itemElement.innerHTML = `
+                    <div style="display: flex; align-items: center; gap: 12px; flex: 1;">
+                        <div style="width: 20px; height: 20px; border: 2px solid var(--border); border-radius: 4px; cursor: pointer; display: flex; align-items: center; justify-content: center;"
+                             onclick="toggleShoppingItem(${item.id})">
+                            ${item.checked ? '<i class="fas fa-check" style="color: var(--secondary);"></i>' : ''}
                         </div>
-                        <div>
-                            <h4>${item.name}</h4>
-                            <p>${item.quantity} • ${item.category}</p>
+                        <div style="flex: 1;">
+                            <div style="font-weight: 600; ${item.checked ? 'text-decoration: line-through; color: var(--gray);' : ''}">
+                                ${item.name}
+                            </div>
+                            <div style="font-size: 14px; color: var(--gray);">
+                                ${item.quantity} • ${item.category} • $${item.estimatedPrice.toFixed(2)}
+                            </div>
+                        </div>
+                        <div style="font-size: 12px; background: #F1F5F9; padding: 4px 8px; border-radius: 12px;">
+                            ${item.store}
                         </div>
                     </div>
-                    <button class="btn btn-sm btn-secondary" onclick="removeShoppingItem(${item.id})">Remove</button>
+                    <button class="btn btn-sm btn-danger" onclick="removeShoppingItem(${item.id})">
+                        <i class="fas fa-trash"></i>
+                    </button>
                 `;
-                shoppingListContainer.appendChild(shoppingItem);
+                shoppingListContainer.appendChild(itemElement);
             });
             
-            // Update shopping count
-            const uncheckedCount = appState.shoppingList.filter(item => !item.checked).length;
-            document.getElementById('shoppingCount').textContent = uncheckedCount;
+            document.getElementById('shoppingTotal').textContent = `$${total.toFixed(2)}`;
         }
 
-        // Toggle shopping item checked status
-        function toggleShoppingItem(id) {
-            const item = appState.shoppingList.find(item => item.id === id);
+        // Toggle shopping item
+        function toggleShoppingItem(itemId) {
+            const item = appState.shoppingList.find(i => i.id === itemId);
             if (item) {
                 item.checked = !item.checked;
                 renderShoppingList();
-                updateStats();
             }
         }
 
         // Remove shopping item
-        function removeShoppingItem(id) {
-            appState.shoppingList = appState.shoppingList.filter(item => item.id !== id);
+        function removeShoppingItem(itemId) {
+            appState.shoppingList = appState.shoppingList.filter(i => i.id !== itemId);
             renderShoppingList();
-            updateStats();
-            
-            showNotification("Item removed from shopping list");
         }
 
-        // Clear checked shopping items
-        function clearCheckedItems() {
-            appState.shoppingList = appState.shoppingList.filter(item => !item.checked);
-            renderShoppingList();
-            updateStats();
+        // Render AI recommendations
+        function renderAIRecommendations() {
+            aiRecommendationsContainer.innerHTML = '';
             
-            showNotification("Cleared checked items from shopping list");
+            const recommendations = [
+                { 
+                    title: "Reduce Food Waste", 
+                    description: "Based on your expiring items, make broccoli soup tonight. You have all ingredients!",
+                    icon: "fa-recycle",
+                    action: "View Recipe",
+                    color: "#10B981"
+                },
+                { 
+                    title: "Budget Saver", 
+                    description: "Switch bell peppers from Whole Foods to Trader Joe's to save $1.50 per pound.",
+                    icon: "fa-wallet",
+                    action: "Update List",
+                    color: "#F59E0B"
+                },
+                { 
+                    title: "Nutrition Boost", 
+                    description: "Add more leafy greens to your meal plan for better iron absorption.",
+                    icon: "fa-heartbeat",
+                    action: "Add Suggestions",
+                    color: "#EF4444"
+                }
+            ];
+            
+            recommendations.forEach(rec => {
+                const recElement = document.createElement('div');
+                recElement.className = 'pantry-item-card';
+                recElement.innerHTML = `
+                    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+                        <div style="width: 40px; height: 40px; border-radius: 10px; background: ${rec.color}20; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas ${rec.icon}" style="color: ${rec.color};"></i>
+                        </div>
+                        <div style="font-weight: 700;">${rec.title}</div>
+                    </div>
+                    <div style="color: var(--gray); margin-bottom: 16px;">${rec.description}</div>
+                    <button class="btn btn-sm btn-primary" style="width: 100%;">
+                        <i class="fas fa-bolt"></i> ${rec.action}
+                    </button>
+                `;
+                aiRecommendationsContainer.appendChild(recElement);
+            });
         }
 
-        // Email shopping list (simulated)
-        function emailShoppingList() {
-            const uncheckedItems = appState.shoppingList.filter(item => !item.checked);
+        // Generate AI meal suggestions
+        function generateAISuggestions() {
+            showToast("AI is analyzing your pantry and preferences...", "info");
             
-            if (uncheckedItems.length === 0) {
-                showNotification("No items to email - your shopping list is empty!");
-                return;
-            }
-            
-            showNotification(`Email sent with ${uncheckedItems.length} shopping items`);
-            
-            // In a real app, this would trigger a Zapier automation
-            // to send an email via Airtable
+            // Simulate API call to LLM wrapper
+            setTimeout(() => {
+                showToast("Generated 5 personalized meal suggestions using GPT-4", "success");
+                
+                // In real implementation, this would call:
+                // fetch(appState.llmWrapperUrl, {
+                //     method: 'POST',
+                //     headers: { 'Content-Type': 'application/json' },
+                //     body: JSON.stringify({
+                //         prompt: "Generate meal suggestions based on user pantry",
+                //         pantryItems: appState.pantryItems,
+                //         preferences: {...}
+                //     })
+                // })
+                
+                addChatMessage("ai", "I've analyzed your pantry and generated 5 meal suggestions! Here are my top picks:\n\n1. Chicken & Broccoli Stir Fry (uses expiring broccoli)\n2. Veggie Pasta (uses pasta & tomato sauce)\n3. Egg Fried Rice (uses rice, eggs, veggies)\n4. Smoothie Bowl (uses bananas & spinach)\n5. Garlic Roasted Veggies\n\nWhich one would you like to add to your meal plan?");
+            }, 2000);
         }
 
-        // Update AI provider
-        function updateAIProvider() {
-            const newProvider = aiProviderSelect.value;
-            appState.aiProvider = newProvider;
-            currentAIProvider.textContent = newProvider.charAt(0).toUpperCase() + newProvider.slice(1);
+        // Generate shopping list
+        function generateShoppingList() {
+            showToast("AI is optimizing your shopping list...", "info");
+            setTimeout(() => {
+                showToast("Shopping list optimized! Saved estimated $15.20 across stores", "success");
+            }, 1500);
+        }
+
+        // Optimize shopping list
+        function optimizeShoppingList() {
+            showToast("Comparing prices across 5 stores...", "info");
+            setTimeout(() => {
+                showToast("Found better prices! Updated shopping list", "success");
+            }, 1500);
+        }
+
+        // Compare prices
+        function comparePrices() {
+            showToast("Fetching real-time prices from Instacart, Amazon Fresh, and local stores...", "info");
+            setTimeout(() => {
+                showToast("Price comparison complete. View the store comparison section", "success");
+            }, 2000);
+        }
+
+        // Export shopping list
+        function exportShoppingList() {
+            showToast("Exporting shopping list to Instacart...", "info");
+            setTimeout(() => {
+                showToast("Shopping list exported to Instacart cart", "success");
+            }, 1000);
+        }
+
+        // Generate weekly plan
+        function generateWeeklyPlan() {
+            showToast("AI is creating your personalized weekly meal plan...", "info");
+            setTimeout(() => {
+                showToast("Weekly meal plan generated! Check your calendar", "success");
+                renderWeeklyCalendar();
+            }, 2500);
+        }
+
+        // Refresh recommendations
+        function refreshRecommendations() {
+            showToast("Updating AI recommendations...", "info");
+            setTimeout(() => {
+                showToast("Recommendations refreshed with latest data", "success");
+                renderAIRecommendations();
+            }, 1000);
+        }
+
+        // Scan receipt
+        function scanReceipt() {
+            showToast("AI scanning receipt... Extracting items and prices", "info");
+            setTimeout(() => {
+                showToast("Receipt scanned! 12 items added to pantry with expiry estimates", "success");
+            }, 3000);
+        }
+
+        // Voice input
+        function voiceInput() {
+            showToast("Listening... Say 'add milk' or 'plan dinner'", "info");
+            setTimeout(() => {
+                showToast("Added '2 gallons of milk' to pantry via voice command", "success");
+            }, 2000);
+        }
+
+        // Scan barcode
+        function scanBarcode() {
+            showToast("Open camera for barcode scanning...", "info");
+            // In real app, this would open device camera
+        }
+
+        // Use camera
+        function useCamera() {
+            showToast("Open camera for item recognition...", "info");
+            // In real app, this would open device camera
+        }
+
+        // Send chat message
+        function sendChatMessage() {
+            const message = chatInput.value.trim();
+            if (!message) return;
             
-            showNotification(`AI provider updated to ${newProvider.toUpperCase()}. In a real app, the LLM wrapper would now route calls to this provider.`);
+            addChatMessage("user", message);
+            chatInput.value = "";
+            
+            // Simulate AI response
+            setTimeout(() => {
+                const responses = [
+                    "Based on your pantry, I suggest making a stir fry tonight with chicken and broccoli. Would you like the recipe?",
+                    "I notice you have several items expiring soon. Let me create a meal plan to use them efficiently.",
+                    "Your nutrition balance looks good this week! Want to optimize for more protein?",
+                    "I can generate a shopping list based on your meal plan. Should I include price comparisons?"
+                ];
+                const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+                addChatMessage("ai", randomResponse);
+            }, 1000);
+        }
+
+        // Add chat message
+        function addChatMessage(sender, message) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message message-${sender}`;
+            messageDiv.textContent = message;
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        // Show toast notification
+        function showToast(message, type = "info") {
+            const toastContainer = document.querySelector('.toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            toast.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}" 
+                   style="color: ${type === 'success' ? 'var(--secondary)' : type === 'error' ? 'var(--danger)' : 'var(--primary)'};"></i>
+                <div>${message}</div>
+            `;
+            toastContainer.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.classList.add('show');
+            }, 10);
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }, 4000);
         }
 
         // Update dashboard stats
-        function updateStats() {
+        function updateDashboardStats() {
             document.getElementById('pantryCount').textContent = appState.pantryItems.length;
+            document.getElementById('expiryCount').textContent = appState.pantryItems.filter(item => item.status === 'expiring').length;
             
-            const plannedMeals = appState.weeklyPlan.filter(item => item.status === 'planned').length;
-            document.getElementById('mealCount').textContent = plannedMeals;
+            const totalMeals = appState.mealPlan.reduce((total, day) => {
+                return total + (day.breakfast ? 1 : 0) + (day.lunch ? 1 : 0) + (day.dinner ? 1 : 0);
+            }, 0);
+            document.getElementById('mealCount').textContent = totalMeals;
             
-            const uncheckedShopping = appState.shoppingList.filter(item => !item.checked).length;
-            document.getElementById('shoppingCount').textContent = uncheckedShopping;
+            const shoppingItems = appState.shoppingList.filter(item => !item.checked).length;
+            document.getElementById('shoppingCount').textContent = shoppingItems;
         }
 
-        // Show notification
-        function showNotification(message) {
-            notificationText.textContent = message;
-            notification.classList.add('show');
-            
-            setTimeout(() => {
-                notification.classList.remove('show');
-            }, 3000);
+        // Helper functions
+        function getCategoryColor(category) {
+            const colors = {
+                'Protein': '#EF4444',
+                'Vegetables': '#10B981',
+                'Fruits': '#F59E0B',
+                'Dairy': '#3B82F6',
+                'Grains': '#8B5CF6',
+                'Condiments': '#EC4899',
+                'Beverages': '#06B6D4',
+                'Spices': '#F97316'
+            };
+            return colors[category] || '#6B7280';
+        }
+
+        function getCategoryIcon(category) {
+            const icons = {
+                'Protein': 'fa-drumstick-bite',
+                'Vegetables': 'fa-carrot',
+                'Fruits': 'fa-apple-alt',
+                'Dairy': 'fa-cheese',
+                'Grains': 'fa-bread-slice',
+                'Condiments': 'fa-wine-bottle',
+                'Beverages': 'fa-wine-glass-alt',
+                'Spices': 'fa-mortar-pestle'
+            };
+            const icon = icons[category] || 'fa-box';
+            return `<i class="fas ${icon}"></i>`;
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        }
+
+        function getUsageSuggestion(item) {
+            const suggestions = {
+                'Protein': 'Great for stir fry, grilling, or adding to salads',
+                'Vegetables': 'Perfect for roasting, stir fry, or fresh salads',
+                'Fruits': 'Eat fresh, add to smoothies, or make desserts',
+                'Dairy': 'Use in baking, cooking, or as snacks',
+                'Grains': 'Cook as side dish or base for bowls'
+            };
+            return suggestions[item.category] || 'Use in various recipes';
         }
 
         // Initialize the app when DOM is loaded
