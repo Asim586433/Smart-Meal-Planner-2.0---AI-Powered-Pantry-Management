@@ -1,0 +1,1533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Meal Planner | Pantry → Plan → Shop → Pantry</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4CAF50;
+            --primary-dark: #388E3C;
+            --secondary: #2196F3;
+            --accent: #FF9800;
+            --light: #f8f9fa;
+            --dark: #343a40;
+            --gray: #6c757d;
+            --border: #dee2e6;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* Header & Navigation */
+        header {
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .logo-icon {
+            color: var(--primary);
+            font-size: 28px;
+        }
+        
+        .logo-text {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--dark);
+        }
+        
+        .logo-subtext {
+            font-size: 12px;
+            color: var(--gray);
+            margin-left: 5px;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 25px;
+        }
+        
+        .nav-link {
+            text-decoration: none;
+            color: var(--dark);
+            font-weight: 500;
+            padding: 8px 12px;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+        
+        .nav-link:hover, .nav-link.active {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--secondary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        
+        /* Authentication Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background-color: white;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 400px;
+            padding: 30px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        }
+        
+        .modal-header {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .modal-title {
+            font-size: 24px;
+            color: var(--dark);
+            margin-bottom: 5px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--border);
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+        }
+        
+        .btn-secondary {
+            background-color: var(--secondary);
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #0b7dda;
+        }
+        
+        .btn-accent {
+            background-color: var(--accent);
+            color: white;
+        }
+        
+        .btn-accent:hover {
+            background-color: #e68900;
+        }
+        
+        .btn-block {
+            width: 100%;
+        }
+        
+        .btn-sm {
+            padding: 8px 16px;
+            font-size: 14px;
+        }
+        
+        /* Main Content */
+        .main-content {
+            min-height: calc(100vh - 200px);
+            padding: 30px 0;
+        }
+        
+        .page {
+            display: none;
+        }
+        
+        .page.active {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .page-header {
+            margin-bottom: 30px;
+        }
+        
+        .page-title {
+            font-size: 32px;
+            color: var(--dark);
+            margin-bottom: 10px;
+        }
+        
+        .page-subtitle {
+            font-size: 18px;
+            color: var(--gray);
+        }
+        
+        /* Dashboard */
+        .dashboard-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            color: white;
+        }
+        
+        .stat-icon.pantry {
+            background-color: var(--primary);
+        }
+        
+        .stat-icon.plan {
+            background-color: var(--secondary);
+        }
+        
+        .stat-icon.shop {
+            background-color: var(--accent);
+        }
+        
+        .stat-content h3 {
+            font-size: 28px;
+            margin-bottom: 5px;
+        }
+        
+        .stat-content p {
+            color: var(--gray);
+        }
+        
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 40px;
+        }
+        
+        .action-card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        
+        .action-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .action-icon {
+            font-size: 36px;
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+        
+        .action-card h3 {
+            margin-bottom: 10px;
+            color: var(--dark);
+        }
+        
+        /* Pantry Page */
+        .pantry-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .search-bar {
+            flex: 1;
+            max-width: 400px;
+            position: relative;
+        }
+        
+        .search-bar i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray);
+        }
+        
+        .search-bar input {
+            width: 100%;
+            padding: 12px 15px 12px 45px;
+            border: 1px solid var(--border);
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        
+        .pantry-items {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .pantry-item {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .item-info h4 {
+            margin-bottom: 5px;
+            color: var(--dark);
+        }
+        
+        .item-meta {
+            display: flex;
+            gap: 15px;
+            font-size: 14px;
+            color: var(--gray);
+        }
+        
+        .item-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        /* Meal Planning Page */
+        .planning-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+        
+        @media (max-width: 768px) {
+            .planning-container {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .plan-section {
+            background-color: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+        }
+        
+        .plan-section h3 {
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border);
+            color: var(--dark);
+        }
+        
+        .meal-option {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border: 1px solid var(--border);
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+        
+        .meal-option.active {
+            border-color: var(--primary);
+            background-color: rgba(76, 175, 80, 0.05);
+        }
+        
+        .meal-info h4 {
+            margin-bottom: 5px;
+        }
+        
+        .meal-meta {
+            font-size: 14px;
+            color: var(--gray);
+        }
+        
+        .ai-generate-box {
+            background-color: #f8f9fa;
+            border: 2px dashed var(--border);
+            border-radius: 10px;
+            padding: 30px;
+            text-align: center;
+            margin-top: 20px;
+            cursor: pointer;
+        }
+        
+        .ai-generate-box:hover {
+            border-color: var(--primary);
+        }
+        
+        .ai-generate-box i {
+            font-size: 36px;
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+        
+        /* Shopping List Page */
+        .shopping-list {
+            background-color: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+        }
+        
+        .shopping-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .shopping-item:last-child {
+            border-bottom: none;
+        }
+        
+        .item-check {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .checkmark {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--border);
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .checkmark.checked {
+            background-color: var(--primary);
+            border-color: var(--primary);
+            color: white;
+        }
+        
+        /* Voice Input */
+        .voice-input-container {
+            margin: 25px 0;
+            position: relative;
+        }
+        
+        .voice-input {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid var(--border);
+            border-radius: 5px;
+            font-size: 16px;
+            padding-right: 120px;
+        }
+        
+        .voice-btn {
+            position: absolute;
+            right: 5px;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: var(--secondary);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 15px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .voice-btn.listening {
+            background-color: #ff5252;
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(255, 82, 82, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(255, 82, 82, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 82, 82, 0); }
+        }
+        
+        /* Footer */
+        footer {
+            background-color: var(--dark);
+            color: white;
+            padding: 30px 0;
+            margin-top: 50px;
+        }
+        
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .footer-links {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .footer-link {
+            color: #adb5bd;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .footer-link:hover {
+            color: white;
+        }
+        
+        /* Notification */
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: var(--primary);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 5px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 1000;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.5s;
+        }
+        
+        .notification.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        /* Demo Notice */
+        .demo-notice {
+            background-color: #fff3cd;
+            color: #856404;
+            padding: 15px;
+            border-radius: 5px;
+            border: 1px solid #ffeaa7;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .header-content {
+                padding: 15px 0;
+            }
+            
+            .page-title {
+                font-size: 26px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Authentication Modal -->
+    <div id="authModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Welcome to Smart Meal Planner</h2>
+                <p>Sign in to access your pantry and meal plans</p>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="email">Email</label>
+                <input type="email" id="email" class="form-input" placeholder="your.email@example.com" value="demo@mealplanner.com">
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="password">Password</label>
+                <input type="password" id="password" class="form-input" placeholder="Enter your password" value="demo123">
+            </div>
+            <button id="loginBtn" class="btn btn-primary btn-block">Sign In</button>
+            <p style="text-align: center; margin-top: 15px; color: var(--gray); font-size: 14px;">Demo account pre-filled. Click "Sign In" to continue.</p>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header>
+        <div class="container header-content">
+            <div class="logo">
+                <div class="logo-icon"><i class="fas fa-apple-alt"></i></div>
+                <div>
+                    <div class="logo-text">Smart Meal Planner<span class="logo-subtext">Pantry → Plan → Shop → Pantry</span></div>
+                </div>
+            </div>
+            <nav class="nav-links">
+                <a href="#" class="nav-link active" data-page="dashboard">Dashboard</a>
+                <a href="#" class="nav-link" data-page="pantry">My Pantry</a>
+                <a href="#" class="nav-link" data-page="plan">Meal Planning</a>
+                <a href="#" class="nav-link" data-page="shop">Shopping List</a>
+                <a href="#" class="nav-link" data-page="settings">Settings</a>
+            </nav>
+            <div class="user-menu">
+                <div class="avatar" id="userAvatar">D</div>
+                <button id="logoutBtn" class="btn btn-sm btn-secondary">Logout</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content container">
+        <!-- Dashboard Page -->
+        <div id="dashboard" class="page active">
+            <div class="page-header">
+                <h1 class="page-title">Dashboard</h1>
+                <p class="page-subtitle">Welcome back! Here's your meal planning overview.</p>
+            </div>
+            
+            <div class="demo-notice">
+                <i class="fas fa-info-circle"></i>
+                <span>This is a functional HTML prototype. In the actual Softr/Airtable app, all data would be stored in Airtable and user-specific.</span>
+            </div>
+            
+            <div class="dashboard-stats">
+                <div class="stat-card">
+                    <div class="stat-icon pantry"><i class="fas fa-warehouse"></i></div>
+                    <div class="stat-content">
+                        <h3 id="pantryCount">12</h3>
+                        <p>Items in your pantry</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon plan"><i class="fas fa-calendar-alt"></i></div>
+                    <div class="stat-content">
+                        <h3 id="mealCount">7</h3>
+                        <p>Meals planned this week</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon shop"><i class="fas fa-shopping-cart"></i></div>
+                    <div class="stat-content">
+                        <h3 id="shoppingCount">5</h3>
+                        <p>Items on shopping list</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="quick-actions">
+                <div class="action-card" data-page="pantry">
+                    <div class="action-icon"><i class="fas fa-plus-circle"></i></div>
+                    <h3>Add to Pantry</h3>
+                    <p>Quickly add items to your pantry</p>
+                </div>
+                <div class="action-card" data-page="plan">
+                    <div class="action-icon"><i class="fas fa-robot"></i></div>
+                    <h3>AI Meal Suggestions</h3>
+                    <p>Get personalized meal ideas</p>
+                </div>
+                <div class="action-card" data-page="shop">
+                    <div class="action-icon"><i class="fas fa-list-check"></i></div>
+                    <h3>View Shopping List</h3>
+                    <p>Check items you need to buy</p>
+                </div>
+                <div class="action-card" id="voiceAction">
+                    <div class="action-icon"><i class="fas fa-microphone"></i></div>
+                    <h3>Voice Input</h3>
+                    <p>Add items using voice command</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Pantry Page -->
+        <div id="pantry" class="page">
+            <div class="page-header">
+                <h1 class="page-title">My Pantry</h1>
+                <p class="page-subtitle">Manage your pantry items and track expiration dates</p>
+            </div>
+            
+            <div class="pantry-controls">
+                <div class="search-bar">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="pantrySearch" placeholder="Search pantry items...">
+                </div>
+                <div>
+                    <button id="addPantryItem" class="btn btn-primary"><i class="fas fa-plus"></i> Add Item</button>
+                    <button id="voicePantryBtn" class="btn btn-secondary"><i class="fas fa-microphone"></i> Voice Add</button>
+                </div>
+            </div>
+            
+            <!-- Voice Input Container -->
+            <div class="voice-input-container" id="voicePantryContainer" style="display: none;">
+                <input type="text" class="voice-input" id="voicePantryInput" placeholder="Say item name and quantity...">
+                <button class="voice-btn" id="voicePantryToggle">
+                    <i class="fas fa-microphone"></i> Start Speaking
+                </button>
+            </div>
+            
+            <div class="pantry-items" id="pantryItemsContainer">
+                <!-- Pantry items will be dynamically added here -->
+            </div>
+        </div>
+        
+        <!-- Meal Planning Page -->
+        <div id="plan" class="page">
+            <div class="page-header">
+                <h1 class="page-title">Meal Planning</h1>
+                <p class="page-subtitle">Plan your meals for the week based on pantry items</p>
+            </div>
+            
+            <div class="planning-container">
+                <div class="plan-section">
+                    <h3>Suggested Meals</h3>
+                    <div id="suggestedMeals">
+                        <!-- Suggested meals will be dynamically added here -->
+                    </div>
+                    
+                    <div class="ai-generate-box" id="generateMealsBtn">
+                        <i class="fas fa-robot"></i>
+                        <h3>Generate AI Meal Suggestions</h3>
+                        <p>Click to get personalized meal ideas based on your pantry</p>
+                    </div>
+                </div>
+                
+                <div class="plan-section">
+                    <h3>This Week's Plan</h3>
+                    <div id="weeklyPlan">
+                        <!-- Weekly plan items will be dynamically added here -->
+                    </div>
+                    
+                    <div style="margin-top: 20px;">
+                        <button id="generateShoppingList" class="btn btn-accent btn-block">
+                            <i class="fas fa-cart-plus"></i> Generate Shopping List
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Shopping List Page -->
+        <div id="shop" class="page">
+            <div class="page-header">
+                <h1 class="page-title">Shopping List</h1>
+                <p class="page-subtitle">Items needed based on your meal plan</p>
+            </div>
+            
+            <div class="shopping-list" id="shoppingListContainer">
+                <!-- Shopping list items will be dynamically added here -->
+            </div>
+            
+            <div style="margin-top: 20px; text-align: center;">
+                <button id="clearCheckedItems" class="btn btn-secondary">
+                    <i class="fas fa-trash"></i> Clear Checked Items
+                </button>
+                <button id="emailListBtn" class="btn btn-primary">
+                    <i class="fas fa-envelope"></i> Email List
+                </button>
+            </div>
+        </div>
+        
+        <!-- Settings Page -->
+        <div id="settings" class="page">
+            <div class="page-header">
+                <h1 class="page-title">Settings</h1>
+                <p class="page-subtitle">Configure your app preferences</p>
+            </div>
+            
+            <div class="plan-section">
+                <h3>AI Integration</h3>
+                <div style="margin-bottom: 20px;">
+                    <p>Current AI Provider: <strong id="currentAIProvider">OpenAI</strong></p>
+                    <p style="font-size: 14px; color: var(--gray); margin-top: 5px;">
+                        In the actual implementation, AI calls go through an LLM wrapper webhook for easy provider switching.
+                    </p>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Switch AI Provider</label>
+                    <select id="aiProviderSelect" class="form-input">
+                        <option value="openai">OpenAI (GPT-4)</option>
+                        <option value="claude">Anthropic Claude</option>
+                        <option value="gemini">Google Gemini</option>
+                    </select>
+                </div>
+                
+                <button id="updateAIProvider" class="btn btn-primary">
+                    <i class="fas fa-sync"></i> Update AI Provider
+                </button>
+            </div>
+            
+            <div class="plan-section" style="margin-top: 30px;">
+                <h3>App Information</h3>
+                <div style="margin-bottom: 20px;">
+                    <p><strong>Tech Stack:</strong> Softr (UI), Airtable (Database), Zapier (Automations)</p>
+                    <p><strong>LLM Wrapper:</strong> All AI calls are routed through a single webhook endpoint for easy maintenance.</p>
+                    <p><strong>User Filtering:</strong> Data is filtered by <code>current_user.email</code> for user-specific views.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container footer-content">
+            <div>
+                <div class="logo-text" style="color: white; font-size: 20px;">Smart Meal Planner</div>
+                <p style="color: #adb5bd; margin-top: 5px;">Pantry → Plan → Shop → Pantry</p>
+            </div>
+            <div class="footer-links">
+                <a href="#" class="footer-link">Privacy Policy</a>
+                <a href="#" class="footer-link">Terms of Service</a>
+                <a href="#" class="footer-link">Contact Support</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Notification -->
+    <div id="notification" class="notification">
+        <i class="fas fa-check-circle"></i>
+        <span id="notificationText">Action completed successfully!</span>
+    </div>
+
+    <script>
+        // Application State
+        const appState = {
+            currentUser: null,
+            isAuthenticated: false,
+            pantryItems: [
+                { id: 1, name: "Chicken Breast", quantity: "2 lbs", category: "Protein", expiry: "2023-12-15" },
+                { id: 2, name: "Brown Rice", quantity: "1 bag", category: "Grains", expiry: "2024-06-30" },
+                { id: 3, name: "Broccoli", quantity: "3 heads", category: "Vegetables", expiry: "2023-12-10" },
+                { id: 4, name: "Eggs", quantity: "12 count", category: "Dairy", expiry: "2023-12-20" },
+                { id: 5, name: "Olive Oil", quantity: "1 bottle", category: "Condiments", expiry: "2024-12-01" },
+                { id: 6, name: "Garlic", quantity: "5 cloves", category: "Vegetables", expiry: "2023-12-25" },
+                { id: 7, name: "Onions", quantity: "3 pieces", category: "Vegetables", expiry: "2023-12-18" },
+                { id: 8, name: "Pasta", quantity: "2 boxes", category: "Grains", expiry: "2024-08-15" },
+                { id: 9, name: "Tomato Sauce", quantity: "1 jar", category: "Condiments", expiry: "2024-05-30" },
+                { id: 10, name: "Milk", quantity: "1 gallon", category: "Dairy", expiry: "2023-12-12" },
+                { id: 11, name: "Bananas", quantity: "6 pieces", category: "Fruits", expiry: "2023-12-09" },
+                { id: 12, name: "Spinach", quantity: "1 bag", category: "Vegetables", expiry: "2023-12-08" }
+            ],
+            suggestedMeals: [
+                { id: 1, name: "Chicken & Broccoli Stir Fry", ingredients: ["Chicken Breast", "Broccoli", "Garlic", "Olive Oil"], prepTime: "25 min" },
+                { id: 2, name: "Vegetable Pasta", ingredients: ["Pasta", "Tomato Sauce", "Garlic", "Onions"], prepTime: "20 min" },
+                { id: 3, name: "Rice & Eggs Bowl", ingredients: ["Brown Rice", "Eggs", "Spinach"], prepTime: "15 min" },
+                { id: 4, name: "Banana Smoothie", ingredients: ["Bananas", "Milk"], prepTime: "5 min" }
+            ],
+            weeklyPlan: [
+                { id: 1, day: "Monday", meal: "Chicken & Broccoli Stir Fry", status: "planned" },
+                { id: 2, day: "Tuesday", meal: "Vegetable Pasta", status: "planned" },
+                { id: 3, day: "Wednesday", meal: "Rice & Eggs Bowl", status: "planned" },
+                { id: 4, day: "Thursday", meal: "Leftovers", status: "planned" }
+            ],
+            shoppingList: [
+                { id: 1, name: "Carrots", quantity: "1 lb", category: "Vegetables", checked: false },
+                { id: 2, name: "Bell Peppers", quantity: "3 pieces", category: "Vegetables", checked: false },
+                { id: 3, name: "Ground Beef", quantity: "1 lb", category: "Protein", checked: false },
+                { id: 4, name: "Cheese", quantity: "1 block", category: "Dairy", checked: true },
+                { id: 5, name: "Bread", quantity: "1 loaf", category: "Grains", checked: false }
+            ],
+            isListening: false,
+            aiProvider: "openai"
+        };
+
+        // DOM Elements
+        const authModal = document.getElementById('authModal');
+        const loginBtn = document.getElementById('loginBtn');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const userAvatar = document.getElementById('userAvatar');
+        const navLinks = document.querySelectorAll('.nav-link');
+        const pages = document.querySelectorAll('.page');
+        const quickActionCards = document.querySelectorAll('.action-card');
+        const addPantryItemBtn = document.getElementById('addPantryItem');
+        const voicePantryBtn = document.getElementById('voicePantryBtn');
+        const voicePantryContainer = document.getElementById('voicePantryContainer');
+        const voicePantryToggle = document.getElementById('voicePantryToggle');
+        const voicePantryInput = document.getElementById('voicePantryInput');
+        const pantryItemsContainer = document.getElementById('pantryItemsContainer');
+        const pantrySearch = document.getElementById('pantrySearch');
+        const generateMealsBtn = document.getElementById('generateMealsBtn');
+        const suggestedMealsContainer = document.getElementById('suggestedMeals');
+        const weeklyPlanContainer = document.getElementById('weeklyPlan');
+        const generateShoppingListBtn = document.getElementById('generateShoppingList');
+        const shoppingListContainer = document.getElementById('shoppingListContainer');
+        const clearCheckedItemsBtn = document.getElementById('clearCheckedItems');
+        const emailListBtn = document.getElementById('emailListBtn');
+        const voiceAction = document.getElementById('voiceAction');
+        const aiProviderSelect = document.getElementById('aiProviderSelect');
+        const updateAIProviderBtn = document.getElementById('updateAIProvider');
+        const currentAIProvider = document.getElementById('currentAIProvider');
+        const notification = document.getElementById('notification');
+        const notificationText = document.getElementById('notificationText');
+
+        // Initialize the app
+        function initApp() {
+            // Show auth modal on load
+            authModal.classList.add('active');
+            
+            // Set up event listeners
+            setupEventListeners();
+            
+            // Load initial data
+            renderPantryItems();
+            renderSuggestedMeals();
+            renderWeeklyPlan();
+            renderShoppingList();
+            updateStats();
+        }
+
+        // Set up all event listeners
+        function setupEventListeners() {
+            // Authentication
+            loginBtn.addEventListener('click', handleLogin);
+            logoutBtn.addEventListener('click', handleLogout);
+            
+            // Navigation
+            navLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const pageId = link.getAttribute('data-page');
+                    switchPage(pageId);
+                    
+                    // Update active nav link
+                    navLinks.forEach(nav => nav.classList.remove('active'));
+                    link.classList.add('active');
+                });
+            });
+            
+            // Quick actions on dashboard
+            quickActionCards.forEach(card => {
+                card.addEventListener('click', (e) => {
+                    const pageId = card.getAttribute('data-page');
+                    if (pageId) {
+                        switchPage(pageId);
+                        
+                        // Update active nav link
+                        navLinks.forEach(nav => {
+                            nav.classList.remove('active');
+                            if (nav.getAttribute('data-page') === pageId) {
+                                nav.classList.add('active');
+                            }
+                        });
+                    }
+                    
+                    // Special handling for voice action
+                    if (card.id === 'voiceAction') {
+                        showVoiceInput();
+                    }
+                });
+            });
+            
+            // Pantry management
+            addPantryItemBtn.addEventListener('click', addPantryItem);
+            voicePantryBtn.addEventListener('click', toggleVoiceInput);
+            voicePantryToggle.addEventListener('click', toggleVoiceRecognition);
+            pantrySearch.addEventListener('input', searchPantryItems);
+            
+            // Meal planning
+            generateMealsBtn.addEventListener('click', generateAIMeals);
+            generateShoppingListBtn.addEventListener('click', generateShoppingList);
+            
+            // Shopping list
+            clearCheckedItemsBtn.addEventListener('click', clearCheckedItems);
+            emailListBtn.addEventListener('click', emailShoppingList);
+            
+            // Settings
+            updateAIProviderBtn.addEventListener('click', updateAIProvider);
+            
+            // Voice input for pantry
+            voiceAction.addEventListener('click', showVoiceInput);
+        }
+
+        // Handle user login
+        function handleLogin() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            if (email && password) {
+                appState.currentUser = email;
+                appState.isAuthenticated = true;
+                
+                // Update UI
+                userAvatar.textContent = email.charAt(0).toUpperCase();
+                authModal.classList.remove('active');
+                
+                showNotification(`Welcome back, ${email}!`);
+            }
+        }
+
+        // Handle user logout
+        function handleLogout() {
+            appState.currentUser = null;
+            appState.isAuthenticated = false;
+            
+            // Update UI
+            userAvatar.textContent = 'D';
+            authModal.classList.add('active');
+            
+            // Go to dashboard
+            switchPage('dashboard');
+            navLinks.forEach(nav => {
+                nav.classList.remove('active');
+                if (nav.getAttribute('data-page') === 'dashboard') {
+                    nav.classList.add('active');
+                }
+            });
+        }
+
+        // Switch between pages
+        function switchPage(pageId) {
+            // Hide all pages
+            pages.forEach(page => page.classList.remove('active'));
+            
+            // Show selected page
+            const targetPage = document.getElementById(pageId);
+            if (targetPage) {
+                targetPage.classList.add('active');
+            }
+        }
+
+        // Render pantry items
+        function renderPantryItems(filter = '') {
+            pantryItemsContainer.innerHTML = '';
+            
+            const filteredItems = appState.pantryItems.filter(item => 
+                item.name.toLowerCase().includes(filter.toLowerCase()) ||
+                item.category.toLowerCase().includes(filter.toLowerCase())
+            );
+            
+            filteredItems.forEach(item => {
+                const pantryItem = document.createElement('div');
+                pantryItem.className = 'pantry-item';
+                pantryItem.innerHTML = `
+                    <div class="item-info">
+                        <h4>${item.name}</h4>
+                        <div class="item-meta">
+                            <span>${item.quantity}</span>
+                            <span>${item.category}</span>
+                            <span>Expires: ${item.expiry}</span>
+                        </div>
+                    </div>
+                    <div class="item-actions">
+                        <button class="btn btn-sm btn-secondary" onclick="usePantryItem(${item.id})">Use</button>
+                        <button class="btn btn-sm btn-accent" onclick="removePantryItem(${item.id})">Remove</button>
+                    </div>
+                `;
+                pantryItemsContainer.appendChild(pantryItem);
+            });
+            
+            // Update pantry count
+            document.getElementById('pantryCount').textContent = appState.pantryItems.length;
+        }
+
+        // Add a new pantry item
+        function addPantryItem() {
+            const itemName = prompt("Enter item name:");
+            if (!itemName) return;
+            
+            const quantity = prompt("Enter quantity (e.g., '2 lbs', '1 bag'):");
+            if (!quantity) return;
+            
+            const categories = ["Protein", "Vegetables", "Fruits", "Grains", "Dairy", "Condiments"];
+            const category = prompt(`Enter category (${categories.join(', ')}):`);
+            
+            const expiry = prompt("Enter expiry date (YYYY-MM-DD):", "2023-12-31");
+            
+            const newItem = {
+                id: appState.pantryItems.length + 1,
+                name: itemName,
+                quantity: quantity,
+                category: category || "Other",
+                expiry: expiry || "2023-12-31"
+            };
+            
+            appState.pantryItems.push(newItem);
+            renderPantryItems();
+            updateStats();
+            
+            showNotification(`Added ${itemName} to pantry`);
+        }
+
+        // Remove a pantry item
+        function removePantryItem(id) {
+            appState.pantryItems = appState.pantryItems.filter(item => item.id !== id);
+            renderPantryItems(pantrySearch.value);
+            updateStats();
+            
+            showNotification("Item removed from pantry");
+        }
+
+        // Use a pantry item (simulate consumption)
+        function usePantryItem(id) {
+            const itemIndex = appState.pantryItems.findIndex(item => item.id === id);
+            if (itemIndex !== -1) {
+                const item = appState.pantryItems[itemIndex];
+                
+                // In a real app, this would decrement quantity
+                // For this demo, we'll just remove it
+                appState.pantryItems.splice(itemIndex, 1);
+                renderPantryItems(pantrySearch.value);
+                updateStats();
+                
+                showNotification(`Used ${item.name} from pantry`);
+            }
+        }
+
+        // Search pantry items
+        function searchPantryItems() {
+            renderPantryItems(pantrySearch.value);
+        }
+
+        // Toggle voice input visibility
+        function toggleVoiceInput() {
+            if (voicePantryContainer.style.display === 'none' || !voicePantryContainer.style.display) {
+                voicePantryContainer.style.display = 'block';
+                showNotification("Voice input activated. Click the microphone to start speaking.");
+            } else {
+                voicePantryContainer.style.display = 'none';
+                stopVoiceRecognition();
+            }
+        }
+
+        // Show voice input from dashboard
+        function showVoiceInput() {
+            switchPage('pantry');
+            navLinks.forEach(nav => {
+                nav.classList.remove('active');
+                if (nav.getAttribute('data-page') === 'pantry') {
+                    nav.classList.add('active');
+                }
+            });
+            
+            // Show voice input after a brief delay
+            setTimeout(() => {
+                voicePantryContainer.style.display = 'block';
+                voicePantryInput.focus();
+                showNotification("Voice input activated. Click the microphone to start speaking.");
+            }, 300);
+        }
+
+        // Toggle voice recognition
+        function toggleVoiceRecognition() {
+            if (!appState.isListening) {
+                startVoiceRecognition();
+            } else {
+                stopVoiceRecognition();
+            }
+        }
+
+        // Start voice recognition (simulated for demo)
+        function startVoiceRecognition() {
+            appState.isListening = true;
+            voicePantryToggle.classList.add('listening');
+            voicePantryToggle.innerHTML = '<i class="fas fa-stop"></i> Stop Listening';
+            voicePantryInput.placeholder = "Listening... say something like 'add 2 tomatoes'";
+            
+            // Simulate voice recognition with a timeout
+            setTimeout(() => {
+                // Simulate recognizing a common phrase
+                const phrases = [
+                    "add 2 tomatoes",
+                    "add 1 pound of ground beef",
+                    "add 3 bananas",
+                    "add milk",
+                    "add a loaf of bread"
+                ];
+                
+                const randomPhrase = phrases[Math.floor(Math.random() * phrases.length)];
+                voicePantryInput.value = randomPhrase;
+                
+                // Auto-process after a delay
+                setTimeout(() => {
+                    processVoiceCommand(randomPhrase);
+                }, 1000);
+            }, 1500);
+        }
+
+        // Stop voice recognition
+        function stopVoiceRecognition() {
+            appState.isListening = false;
+            voicePantryToggle.classList.remove('listening');
+            voicePantryToggle.innerHTML = '<i class="fas fa-microphone"></i> Start Speaking';
+            voicePantryInput.placeholder = "Say item name and quantity...";
+        }
+
+        // Process voice command
+        function processVoiceCommand(command) {
+            stopVoiceRecognition();
+            
+            // Simple parsing for demo
+            const words = command.toLowerCase().split(' ');
+            
+            if (words.includes('add') || words.includes('adds') || words.includes('adding')) {
+                // Extract quantity and item name
+                let quantity = "1";
+                let itemName = "";
+                
+                // Look for quantity indicators
+                for (let i = 0; i < words.length; i++) {
+                    if (words[i] === 'add' || words[i] === 'adds' || words[i] === 'adding') {
+                        // Check next word for quantity
+                        if (i + 1 < words.length && !isNaN(parseInt(words[i + 1]))) {
+                            quantity = words[i + 1];
+                            // Join remaining words as item name
+                            itemName = words.slice(i + 2).join(' ');
+                        } else {
+                            // No quantity specified, use default
+                            itemName = words.slice(i + 1).join(' ');
+                        }
+                        break;
+                    }
+                }
+                
+                if (itemName) {
+                    // Add the item to pantry
+                    const newItem = {
+                        id: appState.pantryItems.length + 1,
+                        name: itemName.charAt(0).toUpperCase() + itemName.slice(1),
+                        quantity: quantity + " " + (words.includes('pound') || words.includes('pounds') ? 'lb' : 
+                                  words.includes('loaf') ? 'loaf' : 
+                                  words.includes('gallon') ? 'gallon' : 'count'),
+                        category: "Voice Added",
+                        expiry: "2023-12-31"
+                    };
+                    
+                    appState.pantryItems.push(newItem);
+                    renderPantryItems();
+                    updateStats();
+                    
+                    showNotification(`Added ${quantity} ${itemName} via voice command`);
+                    voicePantryInput.value = "";
+                }
+            }
+        }
+
+        // Render suggested meals
+        function renderSuggestedMeals() {
+            suggestedMealsContainer.innerHTML = '';
+            
+            appState.suggestedMeals.forEach(meal => {
+                const mealOption = document.createElement('div');
+                mealOption.className = 'meal-option';
+                mealOption.innerHTML = `
+                    <div class="meal-info">
+                        <h4>${meal.name}</h4>
+                        <p class="meal-meta">Ingredients: ${meal.ingredients.join(', ')}</p>
+                        <p class="meal-meta">Prep time: ${meal.prepTime}</p>
+                    </div>
+                    <button class="btn btn-primary btn-sm" onclick="addToMealPlan(${meal.id})">Add to Plan</button>
+                `;
+                suggestedMealsContainer.appendChild(mealOption);
+            });
+        }
+
+        // Render weekly meal plan
+        function renderWeeklyPlan() {
+            weeklyPlanContainer.innerHTML = '';
+            
+            appState.weeklyPlan.forEach(planItem => {
+                const planElement = document.createElement('div');
+                planElement.className = 'meal-option';
+                if (planItem.status === 'planned') planElement.classList.add('active');
+                
+                planElement.innerHTML = `
+                    <div class="meal-info">
+                        <h4>${planItem.day}: ${planItem.meal}</h4>
+                        <p class="meal-meta">Status: ${planItem.status}</p>
+                    </div>
+                    <button class="btn btn-sm btn-secondary" onclick="removeFromMealPlan(${planItem.id})">Remove</button>
+                `;
+                weeklyPlanContainer.appendChild(planElement);
+            });
+            
+            // Update meal count
+            document.getElementById('mealCount').textContent = appState.weeklyPlan.filter(item => item.status === 'planned').length;
+        }
+
+        // Add meal to weekly plan
+        function addToMealPlan(mealId) {
+            const meal = appState.suggestedMeals.find(m => m.id === mealId);
+            if (!meal) return;
+            
+            // Find next available day
+            const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+            const plannedDays = appState.weeklyPlan.map(item => item.day);
+            const nextDay = days.find(day => !plannedDays.includes(day)) || "Next Monday";
+            
+            const newPlanItem = {
+                id: appState.weeklyPlan.length + 1,
+                day: nextDay,
+                meal: meal.name,
+                status: 'planned'
+            };
+            
+            appState.weeklyPlan.push(newPlanItem);
+            renderWeeklyPlan();
+            updateStats();
+            
+            showNotification(`Added ${meal.name} to ${nextDay}'s plan`);
+        }
+
+        // Remove meal from weekly plan
+        function removeFromMealPlan(planId) {
+            appState.weeklyPlan = appState.weeklyPlan.filter(item => item.id !== planId);
+            renderWeeklyPlan();
+            updateStats();
+            
+            showNotification("Meal removed from plan");
+        }
+
+        // Generate AI meal suggestions (simulated)
+        function generateAIMeals() {
+            showNotification("Generating AI meal suggestions based on your pantry...");
+            
+            // Simulate API call to LLM wrapper
+            setTimeout(() => {
+                // In a real app, this would call the LLM wrapper webhook
+                // which would then call OpenAI/Claude/Gemini and return structured JSON
+                
+                const newMeals = [
+                    { id: 5, name: "Chicken Rice Bowl", ingredients: ["Chicken Breast", "Brown Rice", "Garlic", "Onions"], prepTime: "30 min" },
+                    { id: 6, name: "Spinach Omelette", ingredients: ["Eggs", "Spinach", "Milk"], prepTime: "10 min" },
+                    { id: 7, name: "Pasta Primavera", ingredients: ["Pasta", "Broccoli", "Garlic", "Olive Oil"], prepTime: "25 min" }
+                ];
+                
+                // Add new meals to suggestions
+                appState.suggestedMeals = [...appState.suggestedMeals, ...newMeals];
+                renderSuggestedMeals();
+                
+                showNotification(`AI generated ${newMeals.length} new meal suggestions using ${appState.aiProvider.toUpperCase()}`);
+            }, 2000);
+        }
+
+        // Generate shopping list based on meal plan
+        function generateShoppingList() {
+            // In a real app, this would analyze meal plans and pantry
+            // to determine what's missing
+            
+            const newItems = [
+                { id: 6, name: "Avocado", quantity: "2 pieces", category: "Fruits", checked: false },
+                { id: 7, name: "Salmon", quantity: "1 lb", category: "Protein", checked: false },
+                { id: 8, name: "Lemons", quantity: "3 pieces", category: "Fruits", checked: false }
+            ];
+            
+            // Add new items to shopping list
+            appState.shoppingList = [...appState.shoppingList, ...newItems];
+            renderShoppingList();
+            updateStats();
+            
+            showNotification("Generated shopping list based on your meal plan");
+        }
+
+        // Render shopping list
+        function renderShoppingList() {
+            shoppingListContainer.innerHTML = '';
+            
+            appState.shoppingList.forEach(item => {
+                const shoppingItem = document.createElement('div');
+                shoppingItem.className = 'shopping-item';
+                shoppingItem.innerHTML = `
+                    <div class="item-check">
+                        <div class="checkmark ${item.checked ? 'checked' : ''}" onclick="toggleShoppingItem(${item.id})">
+                            ${item.checked ? '<i class="fas fa-check"></i>' : ''}
+                        </div>
+                        <div>
+                            <h4>${item.name}</h4>
+                            <p>${item.quantity} • ${item.category}</p>
+                        </div>
+                    </div>
+                    <button class="btn btn-sm btn-secondary" onclick="removeShoppingItem(${item.id})">Remove</button>
+                `;
+                shoppingListContainer.appendChild(shoppingItem);
+            });
+            
+            // Update shopping count
+            const uncheckedCount = appState.shoppingList.filter(item => !item.checked).length;
+            document.getElementById('shoppingCount').textContent = uncheckedCount;
+        }
+
+        // Toggle shopping item checked status
+        function toggleShoppingItem(id) {
+            const item = appState.shoppingList.find(item => item.id === id);
+            if (item) {
+                item.checked = !item.checked;
+                renderShoppingList();
+                updateStats();
+            }
+        }
+
+        // Remove shopping item
+        function removeShoppingItem(id) {
+            appState.shoppingList = appState.shoppingList.filter(item => item.id !== id);
+            renderShoppingList();
+            updateStats();
+            
+            showNotification("Item removed from shopping list");
+        }
+
+        // Clear checked shopping items
+        function clearCheckedItems() {
+            appState.shoppingList = appState.shoppingList.filter(item => !item.checked);
+            renderShoppingList();
+            updateStats();
+            
+            showNotification("Cleared checked items from shopping list");
+        }
+
+        // Email shopping list (simulated)
+        function emailShoppingList() {
+            const uncheckedItems = appState.shoppingList.filter(item => !item.checked);
+            
+            if (uncheckedItems.length === 0) {
+                showNotification("No items to email - your shopping list is empty!");
+                return;
+            }
+            
+            showNotification(`Email sent with ${uncheckedItems.length} shopping items`);
+            
+            // In a real app, this would trigger a Zapier automation
+            // to send an email via Airtable
+        }
+
+        // Update AI provider
+        function updateAIProvider() {
+            const newProvider = aiProviderSelect.value;
+            appState.aiProvider = newProvider;
+            currentAIProvider.textContent = newProvider.charAt(0).toUpperCase() + newProvider.slice(1);
+            
+            showNotification(`AI provider updated to ${newProvider.toUpperCase()}. In a real app, the LLM wrapper would now route calls to this provider.`);
+        }
+
+        // Update dashboard stats
+        function updateStats() {
+            document.getElementById('pantryCount').textContent = appState.pantryItems.length;
+            
+            const plannedMeals = appState.weeklyPlan.filter(item => item.status === 'planned').length;
+            document.getElementById('mealCount').textContent = plannedMeals;
+            
+            const uncheckedShopping = appState.shoppingList.filter(item => !item.checked).length;
+            document.getElementById('shoppingCount').textContent = uncheckedShopping;
+        }
+
+        // Show notification
+        function showNotification(message) {
+            notificationText.textContent = message;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // Initialize the app when DOM is loaded
+        document.addEventListener('DOMContentLoaded', initApp);
+    </script>
+</body>
+</html>
